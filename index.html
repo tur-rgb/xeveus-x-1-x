@@ -1,0 +1,5975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>XEVEU X1</title>
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-dark: rgba(0,0,0,0.65);
+    --card: rgba(20,20,20,0.42);
+    --accent-red: #b41f1f;
+    --accent-blue: #2d8bf7;
+    --glass-border: rgba(255,255,255,0.06);
+    --soft-white: rgba(255,255,255,0.9);
+    --glass: rgba(255,255,255,0.03);
+    --tools-bg: #000000;
+    --tools-card: rgba(20, 20, 20, 0.6);
+    --tools-accent: #ff3b3b;
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --gradient-6: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+  }
+
+  /* Reset */
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Share Tech Mono', monospace}
+  html,body{height:100%;background:#000;color:white;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  /* Fullscreen video background */
+  .bg-video-wrap{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    overflow:hidden;
+  }
+  .bg-video-wrap video{
+    position:absolute;
+    top:50%;left:50%;
+    width:110%;height:110%;
+    transform:translate(-50%,-50%);
+    object-fit:cover;
+    filter: blur(8px) contrast(.9) brightness(.55);
+    opacity:0.95;
+    pointer-events:none;
+  }
+
+  /* subtle vignette */
+  .overlay-vignette{
+    position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.6) 60%);
+    pointer-events:none;
+  }
+
+  /* page container - mobile centered column */
+  .page {
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px 18px 92px;
+  }
+
+  .card {
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
+    border-radius:18px;
+    padding:18px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+
+  /* App icon + title */
+  .top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:12px;
+  }
+  .app-icon{
+    width:60px;height:60px;border-radius:14px;
+    background:linear-gradient(135deg,#11070a,#2b0000);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 6px 20px rgba(180,31,31,0.12);
+    border:1px solid rgba(255,255,255,0.04);
+  }
+  .app-icon img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(180,31,31,0.12))}
+
+  .brand{
+    display:flex;flex-direction:column;line-height:1;
+  }
+  .brand .line1{font-size:12px;color:rgba(255,255,255,0.66)}
+  .brand .line2{font-size:16px;letter-spacing:2px;color:var(--soft-white);font-weight:600}
+
+  /* video preview box */
+  .preview {
+    margin-top:8px;
+    width:100%;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.04);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.45));
+    box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    position:relative;
+  }
+
+  .preview video{
+    width:100%;height:160px;object-fit:cover;display:block;
+    filter: contrast(0.95) saturate(1.05);
+  }
+
+  .preview .center-text {
+    position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+    text-align:center;font-size:30px;letter-spacing:6px;color:#fff;
+    text-shadow: 0 6px 30px rgba(0,0,0,0.6), 0 0 18px rgba(255,255,255,0.03);
+    mix-blend-mode:screen;
+    pointer-events:none;
+  }
+  .preview .title-small{
+    position:absolute;top:10px;left:12px;font-size:11px;color:rgba(255,255,255,0.6);
+    background: rgba(0,0,0,0.2);padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)
+  }
+
+  .choose{
+    margin:18px 0 6px;color:rgba(255,255,255,0.6);font-size:13px;text-align:center;
+  }
+
+  /* Sign-in buttons */
+  .actions{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+  .btn{
+    display:flex;align-items:center;gap:12px;justify-content:center;
+    height:52px;border-radius:12px;padding:0 18px;font-size:15px;font-weight:600;
+    color:white;border:0;cursor:pointer;box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.02);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.red{
+    background: linear-gradient(180deg, #ca2a2a, #8f1212);
+    box-shadow: 0 10px 30px rgba(203,34,34,0.14);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .btn.blue{
+    background: linear-gradient(180deg, #4ea7ff, #106ad6);
+    box-shadow: 0 10px 30px rgba(46,122,255,0.12);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .btn svg{width:18px;height:18px;opacity:0.95;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5))}
+
+  /* contact box */
+  .contact{
+    margin-top:20px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.25));
+    border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:space-between;
+  }
+  .contact .left{text-align:left}
+  .contact .left p{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px}
+  .contact .icons{display:flex;gap:12px}
+  .circle{
+    width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03);
+  }
+  .contact small{display:block;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.45);text-align:center}
+
+  /* bottom navigation */
+  .bottom-nav{
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:14px;display:flex;gap:18px;background:linear-gradient(180deg, rgba(0,0,0,0.36), rgba(0,0,0,0.5));
+    padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);backdrop-filter: blur(6px);
+  }
+  .nav-item{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+  .nav-item svg{width:20px;height:20px;opacity:0.9}
+
+  /* login/dashboard containers (overlay style to match) */
+  .view {
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+  }
+  .login-panel {
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 30px;
+  width: 85%;
+  max-width: 380px;
+  margin: 60px auto;
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 15px rgba(255,0,0,0.5);
+}
+
+.login-panel h3 {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.subtext {
+  color: #bbb;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.login-panel input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #fff;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.login-panel input:focus {
+  border-color: #ff1c1c;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.btn.red {
+  background: rgba(255, 0, 0, 0.8);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn.red:hover {
+  background: #ff0000;
+}
+
+.small-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: #ff3c3c;
+  width: 100%;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(20,20,20,0.5);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.bottom-nav button {
+  background: transparent;
+  border: none;
+  color: #ff3c3c;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.bottom-nav button:hover {
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+/* Paparan video selepas login */
+#videoView {
+  background: #000;
+  display: none; /* disembunyikan dulu */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+/* Kotak video tengah */
+.video-box {
+  width: 80vw;
+  max-width: 600px;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 40px #000, 0 0 80px #000;
+}
+
+/* Video di dalam kotak */
+.video-box video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9) contrast(1.1);
+  border-radius: 14px;
+}
+
+/* Teks bawah video */
+#videoView .overlay-text {
+  margin-top: 28px;
+  font-size: 34px;
+  font-weight: bold;
+  font-family: 'Share Tech Mono', monospace;
+  color: #fff;
+  letter-spacing: 4px;
+  text-shadow: 
+    0 0 10px #000,
+    0 0 20px #fff,
+    0 0 40px #fff,
+    0 0 80px #fff;
+}
+
+/* WhatsApp Bug Page Style - Simplified Black Design */
+#wаPage{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:#000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.center-box{
+  background: #111;
+  border: 1px solid #333;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 30px;
+  width: 85%;
+  max-width: 380px;
+  margin: 60px auto;
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+
+.center-box .logo{
+  width:80px;
+  height:80px;
+  border-radius:14px;
+  margin-bottom:10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.center-box h3 {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.center-box .subtext {
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.center-box input,
+.center-box select{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #333;
+  color:#fff;
+  border-radius:8px;
+  outline:none;
+  text-align:center;
+}
+
+.center-box input:focus,
+.center-box select:focus {
+  border-color: #555;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.center-box button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  margin-top:8px;
+  background: #222;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  transition: 0.3s;
+}
+
+.center-box button:hover {
+  background: #333;
+}
+
+.center-box .close-btn{
+  background: transparent;
+  border: 1px solid #333;
+  color: #aaa;
+  width: 100%;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+body {
+  background: #000;
+  font-family: 'Share Tech Mono', monospace;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.center-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 50px;
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  object-fit: cover;
+}
+
+input, .type-bug-header, button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  color: white;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid #555;
+}
+
+.type-bug-box {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+}
+
+.type-bug-header {
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.3s;
+}
+
+.type-bug-header:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.type-bug-list {
+  background: #222;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.type-bug-box.open .type-bug-list {
+  max-height: 160px; /* slide tinggi */
+}
+
+.bug-option {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.bug-option:last-child {
+  border-bottom: none;
+}
+
+.bug-option:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+button {
+  background: #222;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: #333;
+  transform: scale(1.03);
+}
+
+.close-btn {
+  background: transparent;
+  font-weight: normal;
+  border: 1px solid #333;
+}
+
+@media (max-width: 420px) {
+  .center-box {
+    width: 90%;
+    padding: 16px;
+    gap: 14px;
+  }
+  input, .type-bug-header, button {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+/* Tools Dashboard Page Style - Enhanced with Wavy Effect */
+#toolsView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000; /* Simple black background */
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+  padding: 20px 0 80px;
+  overflow-y: auto;
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.tools-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 15px;
+  position: relative;
+}
+
+.tools-header h1 {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ff3b3b, #ff7b3b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(255, 59, 59, 0.5);
+}
+
+.tools-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+}
+
+.tools-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 0 20px;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tool-card {
+  background: rgba(20, 20, 20, 0.6); /* Simple color like login page */
+  border-radius: 20px;
+  padding: 25px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(255, 0, 0, 0.3); /* Border like login page */
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Wavy animation effect */
+@keyframes wavy {
+  0% { transform: translateZ(0) rotateX(0) rotateY(0); }
+  25% { transform: translateZ(10px) rotateX(2deg) rotateY(2deg); }
+  50% { transform: translateZ(0) rotateX(0) rotateY(0); }
+  75% { transform: translateZ(10px) rotateX(-2deg) rotateY(-2deg); }
+  100% { transform: translateZ(0) rotateX(0) rotateY(0); }
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tool-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tool-card:hover::before {
+  opacity: 1;
+}
+
+.tool-card:hover::after {
+  opacity: 1;
+}
+
+.tool-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  animation: wavy 2s ease-in-out infinite;
+  background: rgba(20, 20, 20, 0.8); /* Darker background on hover */
+  border: 1px solid rgba(255, 0, 0, 0.5); /* Brighter border on hover */
+}
+
+.tool-card:active {
+  transform: translateY(-5px) scale(1.01);
+  animation: wavy 0.5s ease-in-out;
+}
+
+.tool-card.ddos {
+  background: rgba(120, 20, 20, 0.6); /* Reddish like login page */
+}
+
+.tool-card.network {
+  background: rgba(20, 20, 120, 0.6); /* Bluish */
+}
+
+.tool-card.osint {
+  background: rgba(20, 80, 20, 0.6); /* Greenish */
+}
+
+.tool-card.downloader {
+  background: rgba(80, 20, 80, 0.6); /* Purplish */
+}
+
+.tool-card.utilities {
+  background: rgba(80, 80, 20, 0.6); /* Yellowish */
+}
+
+.tool-card.kupon {
+  background: rgba(20, 80, 80, 0.6); /* Cyanish */
+}
+
+.tool-card.quick-access {
+  background: rgba(20, 80, 80, 0.6); /* Cyanish */
+}
+
+.tool-card.developer {
+  background: rgba(120, 20, 120, 0.6); /* Purple */
+}
+
+.tool-card.control {
+  background: rgba(80, 40, 120, 0.6); /* Purple-blue */
+}
+
+.tool-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.tool-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: white;
+}
+
+.tool-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tools Bottom Navigation - Enhanced */
+.tools-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 101;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tools-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  position: relative;
+}
+
+.tools-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.tools-nav-item.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tools-nav-item svg {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.tools-nav-item.home svg {
+  fill: #ff3b3b;
+}
+
+.tools-nav-item.whatsapp svg {
+  fill: #25d366;
+}
+
+.tools-nav-item.tools svg {
+  fill: #2d8bf7;
+}
+
+.tools-nav-item.phone svg {
+  fill: #9c27b0;
+}
+
+.tools-nav-item.developer svg {
+  fill: #9c27b0;
+}
+
+.tools-nav-item.active svg {
+  transform: translateY(-3px);
+}
+
+.tools-nav-item span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.tools-nav-item.active span {
+  color: #fff;
+  font-weight: 600;
+}
+
+.tools-nav-item.home.active span {
+  color: #ff3b3b;
+}
+
+.tools-nav-item.whatsapp.active span {
+  color: #25d366;
+}
+
+.tools-nav-item.tools.active span {
+  color: #2d8bf7;
+}
+
+.tools-nav-item.phone.active span {
+  color: #9c27b0;
+}
+
+.tools-nav-item.developer.active span {
+  color: #9c27b0;
+}
+
+/* WiFi Kill Page Style */
+#wifiKillView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.wifi-kill-panel {
+  background: rgba(20, 20, 30, 0.8);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  box-shadow: 0 0 30px rgba(255, 100, 100, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+.wifi-kill-panel h2 {
+  font-size: 24px;
+  color: #ff6464;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.wifi-kill-panel .input-group {
+  margin-bottom: 20px;
+}
+
+.wifi-kill-panel label {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.wifi-kill-panel input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.wifi-kill-panel input:focus {
+  border-color: #ff6464;
+  box-shadow: 0 0 10px rgba(255, 100, 100, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.wifi-kill-panel .attack-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #ff6464, #ff3232);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+}
+
+.wifi-kill-panel .attack-btn:hover {
+  background: linear-gradient(90deg, #ff7a7a, #ff4848);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 50, 50, 0.4);
+}
+
+.wifi-kill-panel .attack-btn:active {
+  transform: translateY(0);
+}
+
+.wifi-kill-panel .close-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wifi-kill-panel .close-btn:hover {
+  background: rgba(255, 100, 100, 0.1);
+  color: #fff;
+}
+
+/* DDOS Page Style */
+#ddosView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.ddos-panel {
+  background: rgba(20, 20, 30, 0.8);
+  border: 1px solid rgba(100, 100, 255, 0.3);
+  box-shadow: 0 0 30px rgba(100, 100, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+.ddos-panel h2 {
+  font-size: 24px;
+  color: #6464ff;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.ddos-panel .input-group {
+  margin-bottom: 20px;
+}
+
+.ddos-panel label {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.ddos-panel input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(100, 100, 255, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.ddos-panel input:focus {
+  border-color: #6464ff;
+  box-shadow: 0 0 10px rgba(100, 100, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ddos-panel .attack-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #6464ff, #3232ff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(50, 50, 255, 0.3);
+}
+
+.ddos-panel .attack-btn:hover {
+  background: linear-gradient(90deg, #7a7aff, #4848ff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(50, 50, 255, 0.4);
+}
+
+.ddos-panel .attack-btn:active {
+  transform: translateY(0);
+}
+
+.ddos-panel .close-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(100, 100, 255, 0.3);
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ddos-panel .close-btn:hover {
+  background: rgba(100, 100, 255, 0.1);
+  color: #fff;
+}
+
+/* Status indicator animation */
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.active {
+  background-color: #4ade80;
+}
+
+.status-indicator.inactive {
+  background-color: #ef4444;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+/* Loading animation */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Message text style */
+.message-text {
+  color: #ff4444;
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+  display: none;
+}
+
+/* OSINT Page Style */
+#osintView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #8B0000 0%, #FF0000 50%, #8B0000 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  animation: waveBackground 10s ease infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes waveBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.osint-panel {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+.osint-panel h2 {
+  font-size: 24px;
+  color: #ff3b3b;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.osint-panel .input-group {
+  margin-bottom: 20px;
+}
+
+.osint-panel label {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.osint-panel input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.osint-panel input:focus {
+  border-color: #black;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.osint-panel .track-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #ff3b3b, #d60000);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+}
+
+.osint-panel .track-btn:hover {
+  background: linear-gradient(90deg, #ff5555, #ff0000);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 50, 50, 0.4);
+}
+
+.osint-panel .track-btn:active {
+  transform: translateY(0);
+}
+
+.osint-panel .close-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.osint-panel .close-btn:hover {
+  background: rgba(255, 0, 0, 0.1);
+  color: #fff;
+}
+
+.osint-result {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  white-space: pre-wrap;
+}
+
+/* Coming Soon Popup */
+.coming-soon-popup {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 15px;
+  padding: 15px 25px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 1000;
+  display: none;
+  animation: slideUp 0.5s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Anime List Page Style */
+#animeView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.anime-header {
+  background: rgba(20, 20, 30, 0.9);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.anime-header h1 {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.anime-header .back-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.anime-header .back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.anime-container {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  padding-bottom: 80px;
+}
+
+.anime-card {
+  background: rgba(30, 30, 40, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.anime-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.anime-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.anime-card .anime-info {
+  padding: 12px;
+}
+
+.anime-card .anime-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.anime-card .anime-episode {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.anime-card .anime-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 0, 0, 0.8);
+  color: #fff;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.anime-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 101;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.anime-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  position: relative;
+}
+
+.anime-nav-item svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 5px;
+  fill: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.anime-nav-item.active svg {
+  fill: #ff3b3b;
+}
+
+.anime-nav-item span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.anime-nav-item.active span {
+  color: #ff3b3b;
+  font-weight: 600;
+}
+
+.anime-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin: 20px 0;
+}
+
+.anime-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #ff3b3b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.anime-error {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+/* Anime Video Player Page Style */
+#animeVideoView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: none;
+  flex-direction: column;
+  z-index: 200;
+}
+
+.anime-video-header {
+  background: rgba(20, 20, 30, 0.9);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.anime-video-header .back-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.anime-video-header .back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.anime-video-header h2 {
+  font-size: 18px;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.anime-video-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.anime-video-player {
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.anime-video-player video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.anime-video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.anime-video-player:hover .anime-video-controls {
+  opacity: 1;
+}
+
+.anime-video-controls button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.anime-video-controls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.anime-video-controls .play-pause-btn {
+  width: 40px;
+  height: 40px;
+}
+
+.anime-video-controls .control-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.anime-video-progress {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  position: relative;
+  cursor: pointer;
+}
+
+.anime-video-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #ff3b3b;
+  border-radius: 5px;
+  width: 0%;
+}
+
+.anime-video-time {
+  color: #fff;
+  font-size: 12px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.anime-video-info {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  color: #fff;
+}
+
+.anime-video-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.anime-video-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 20px;
+}
+
+.anime-video-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.anime-video-action-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.anime-video-action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.anime-video-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.anime-episodes-list {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+}
+
+.anime-episodes-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.anime-episodes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.anime-episode-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.anime-episode-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.anime-episode-item.active {
+  background: rgba(255, 59, 59, 0.5);
+  border-color: rgba(255, 59, 59, 0.8);
+}
+
+.anime-related-videos {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 30px;
+}
+
+.anime-related-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.anime-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.anime-related-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.anime-related-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.anime-related-item img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+}
+
+.anime-related-info {
+  padding: 10px;
+}
+
+.anime-related-title {
+  font-size: 12px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.anime-related-episode {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 3px;
+}
+
+.anime-video-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.anime-video-loading .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #ff3b3b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.anime-video-loading p {
+  color: #fff;
+  font-size: 16px;
+}
+
+.anime-video-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 20px;
+  text-align: center;
+}
+
+.anime-video-error p {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.anime-video-error button {
+  background: rgba(255, 59, 59, 0.8);
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.anime-video-error button:hover {
+  background: rgba(255, 59, 59, 1);
+}
+
+@media (max-width: 768px) {
+  .anime-video-player {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+  }
+  
+  .anime-video-info {
+    padding: 15px;
+  }
+  
+  .anime-video-title {
+    font-size: 18px;
+  }
+  
+  .anime-video-description {
+    font-size: 13px;
+  }
+  
+  .anime-episodes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+  
+  .anime-related-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* Kupon Page Style - NEW */
+#kuponView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #8B0000 0%, #FF0000 50%, #8B0000 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 200;
+  padding: 20px;
+  animation: waveBackground 10s ease infinite;
+  background-size: 200% 200%;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+.kupon-panel {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+  margin-top: 20px;
+}
+
+.kupon-panel h2 {
+  font-size: 24px;
+  color: #ff3b3b;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.kupon-panel .input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.kupon-panel label {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.kupon-panel input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.kupon-panel input:focus {
+  border-color: #ff3b3b;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.kupon-panel .redeem-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #ff3b3b, #d60000);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 50, 50, 0.3);
+}
+
+.kupon-panel .redeem-btn:hover {
+  background: linear-gradient(90deg, #ff5555, #ff0000);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 50, 50, 0.4);
+}
+
+.kupon-panel .redeem-btn:active {
+  transform: translateY(0);
+}
+
+.kupon-panel .close-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.kupon-panel .close-btn:hover {
+  background: rgba(255, 0, 0, 0.1);
+  color: #fff;
+}
+
+.kupon-result {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  text-align: left;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+  white-space: pre-wrap;
+}
+
+/* Kupon Bottom Navigation */
+.kupon-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 101;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.kupon-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  position: relative;
+}
+
+.kupon-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.kupon-nav-item.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.kupon-nav-item svg {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.kupon-nav-item.home svg {
+  fill: #ff3b3b;
+}
+
+.kupon-nav-item.whatsapp svg {
+  fill: #25d366;
+}
+
+.kupon-nav-item.tools svg {
+  fill: #2d8bf7;
+}
+
+.kupon-nav-item.active svg {
+  transform: translateY(-3px);
+}
+
+.kupon-nav-item span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.kupon-nav-item.active span {
+  color: #fff;
+  font-weight: 600;
+}
+
+.kupon-nav-item.home.active span {
+  color: #ff3b3b;
+}
+
+.kupon-nav-item.whatsapp.active span {
+  color: #25d366;
+}
+
+.kupon-nav-item.tools.active span {
+  color: #2d8bf7;
+}
+
+/* Success message style */
+.success-message {
+  background: rgba(0, 200, 0, 0.2);
+  border: 1px solid rgba(0, 200, 0, 0.5);
+  color: #00ff00;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  text-align: center;
+  display: none;
+}
+
+.error-message {
+  background: rgba(200, 0, 0, 0.2);
+  border: 1px solid rgba(200, 0, 0, 0.5);
+  color: #ff0000;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  text-align: center;
+  display: none;
+}
+
+/* Developer Control Page Style */
+#developerView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #1a0033 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 200;
+  padding: 20px;
+  animation: waveBackground 10s ease infinite;
+  background-size: 200% 200%;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+.developer-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 15px;
+  position: relative;
+  width: 100%;
+}
+
+.developer-header h1 {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #9c27b0, #e91e63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+}
+
+.developer-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+}
+
+.live-stats-container {
+  width: 90%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.live-stats-box {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(156, 39, 176, 0.5);
+  box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.live-stats-box h2 {
+  font-size: 24px;
+  color: #9c27b0;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.activity-log {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  height: 200px;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+.activity-log h3 {
+  font-size: 16px;
+  color: #9c27b0;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.log-entry {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+  text-align: left;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.log-entry.success {
+  background: rgba(0, 200, 0, 0.1);
+  border-left: 3px solid #00c851;
+}
+
+.log-entry.warning {
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+}
+
+.log-entry.error {
+  background: rgba(255, 0, 0, 0.1);
+  border-left: 3px solid #ff4444;
+}
+
+.pulse-animation {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 12px;
+  height: 12px;
+  background: #9c27b0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(156, 39, 176, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(156, 39, 176, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(156, 39, 176, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(156, 39, 176, 0);
+  }
+}
+
+.developer-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.control-btn {
+  flex: 1;
+  padding: 10px;
+  background: rgba(156, 39, 176, 0.2);
+  border: 1px solid rgba(156, 39, 176, 0.5);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  background: rgba(156, 39, 176, 0.4);
+}
+
+.control-btn.active {
+  background: rgba(156, 39, 176, 0.6);
+}
+
+/* Developer Bottom Navigation */
+.developer-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 101;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.developer-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  position: relative;
+}
+
+.developer-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.developer-nav-item.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.developer-nav-item svg {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.developer-nav-item.home svg {
+  fill: #ff3b3b;
+}
+
+.developer-nav-item.whatsapp svg {
+  fill: #25d366;
+}
+
+.developer-nav-item.tools svg {
+  fill: #2d8bf7;
+}
+
+.developer-nav-item.developer svg {
+  fill: #9c27b0;
+}
+
+.developer-nav-item.active svg {
+  transform: translateY(-3px);
+}
+
+.developer-nav-item span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.developer-nav-item.active span {
+  color: #fff;
+  font-weight: 600;
+}
+
+.developer-nav-item.home.active span {
+  color: #ff3b3b;
+}
+
+.developer-nav-item.whatsapp.active span {
+  color: #25d366;
+}
+
+.developer-nav-item.tools.active span {
+  color: #2d8bf7;
+}
+
+.developer-nav-item.developer.active span {
+  color: #9c27b0;
+}
+
+/* CONTROL Page Style */
+#controlView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+  padding: 20px 0 80px;
+  overflow-y: auto;
+}
+
+.control-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 15px;
+  position: relative;
+}
+
+.control-header h1 {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #9c27b0, #e91e63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+}
+
+.control-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+}
+
+.control-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 0 20px;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.device-card {
+  background: rgba(20, 20, 30, 0.8);
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.device-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(30, 30, 40, 0.9);
+}
+
+.device-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(156, 39, 176, 0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.device-card:hover::before {
+  opacity: 1;
+}
+
+.device-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.device-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: #9c27b0;
+}
+
+.device-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.device-status {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+}
+
+/* Control Bottom Navigation */
+.control-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 101;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.control-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  position: relative;
+}
+
+.control-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.control-nav-item.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.control-nav-item svg {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.control-nav-item.home svg {
+  fill: #ff3b3b;
+}
+
+.control-nav-item.whatsapp svg {
+  fill: #25d366;
+}
+
+.control-nav-item.tools svg {
+  fill: #2d8bf7;
+}
+
+.control-nav-item.phone svg {
+  fill: #9c27b0;
+}
+
+.control-nav-item.active svg {
+  transform: translateY(-3px);
+}
+
+.control-nav-item span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.control-nav-item.active span {
+  color: #fff;
+  font-weight: 600;
+}
+
+.control-nav-item.home.active span {
+  color: #ff3b3b;
+}
+
+.control-nav-item.whatsapp.active span {
+  color: #25d366;
+}
+
+.control-nav-item.tools.active span {
+  color: #2d8bf7;
+}
+
+.control-nav-item.phone.active span {
+  color: #9c27b0;
+}
+
+/* Device Details Page Style */
+#deviceDetailsView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  z-index: 200;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.device-details-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.device-details-back-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.device-details-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.device-details-title {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.device-details-container {
+  width: 90%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.device-info-card {
+  background: rgba(20, 20, 30, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.device-info-card h3 {
+  font-size: 18px;
+  color: #9c27b0;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.device-info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.device-info-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.device-info-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.device-info-value {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.battery-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.battery-bar {
+  width: 60px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.battery-level {
+  height: 100%;
+  background: #4ade80;
+  border-radius: 5px;
+}
+
+.battery-text {
+  font-size: 12px;
+  color: #fff;
+}
+
+.device-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.device-action-btn {
+  flex: 1;
+  padding: 15px;
+  background: rgba(156, 39, 176, 0.2);
+  border: 1px solid rgba(156, 39, 176, 0.5);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.device-action-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: #9c27b0;
+}
+
+.device-action-btn:hover {
+  background: rgba(156, 39, 176, 0.4);
+  transform: translateY(-2px);
+}
+
+/* File Types Page Style */
+#fileTypesView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  z-index: 300;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.file-types-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.file-types-back-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.file-types-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.file-types-title {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.file-types-container {
+  width: 90%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.file-type-card {
+  background: rgba(20, 20, 30, 0.8);
+  border-radius: 15px;
+  padding: 15px;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.file-type-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(156, 39, 176, 0.2);
+  border-radius: 10px;
+}
+
+.file-type-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: #9c27b0;
+}
+
+.file-type-info {
+  flex: 1;
+}
+
+.file-type-name {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.file-type-details {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.file-type-size {
+  font-size: 14px;
+  color: #9c27b0;
+  font-weight: 600;
+}
+
+/* Real-time Location Page Style */
+#realtimeLocationView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  z-index: 300;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.realtime-location-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.realtime-location-back-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.realtime-location-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.realtime-location-title {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.realtime-location-container {
+  width: 90%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.map-container {
+  background: rgba(20, 20, 30, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 250px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.location-info {
+  width: 100%;
+}
+
+.location-info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.location-info-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.location-info-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.location-info-value {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.location-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.location-action-btn {
+  flex: 1;
+  padding: 15px;
+  background: rgba(156, 39, 176, 0.2);
+  border: 1px solid rgba(156, 39, 176, 0.5);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-action-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: #9c27b0;
+}
+
+.location-action-btn:hover {
+  background: rgba(156, 39, 176, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Battery Info Page Style */
+#batteryInfoView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  display: none;
+  flex-direction: column;
+  z-index: 300;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.battery-info-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.battery-info-back-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.battery-info-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.battery-info-title {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.battery-info-container {
+  width: 90%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.battery-status-card {
+  background: rgba(20, 20, 30, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.battery-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.battery-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: #9c27b0;
+}
+
+.battery-percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.battery-status-text {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.battery-details {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.battery-detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.battery-detail-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.battery-detail-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.battery-detail-value {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.battery-usage-chart {
+  width: 100%;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+.battery-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.battery-action-btn {
+  flex: 1;
+  padding: 15px;
+  background: rgba(156, 39, 176, 0.2);
+  border: 1px solid rgba(156, 39, 176, 0.5);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.battery-action-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: #9c27b0;
+}
+
+.battery-action-btn:hover {
+  background: rgba(156, 39, 176, 0.4);
+  transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+
+<!-- Background video -->
+<div class="bg-video-wrap" aria-hidden="true">
+  <video id="bgVideo" playsinline autoplay muted loop crossorigin>
+    <source src="https://files.catbox.moe/rgwdqq.mp4" type="video/mp4">
+  </video>
+</div>
+<div class="overlay-vignette"></div>
+
+<div class="page">
+  <main class="card" role="main" aria-labelledby="main-title">
+
+    <header class="top">
+      <div class="app-icon" aria-hidden="true">
+        <!-- simple logo: X icon -->
+        <svg width="46" height="46" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 6px 10px rgba(180,31,31,0.12))">
+          <rect x="0" y="0" width="24" height="24" rx="5" fill="#11070a"/>
+          <path d="M6 6L18 18M18 6L6 18" stroke="#ff4d4d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="brand">
+        <span class="line1">SERVER CONNECT</span>
+        <span class="line2" id="main-title">XEVEUS X-1</span>
+      </div>
+    </header>
+
+    <!-- preview video card -->
+    <section class="preview" aria-label="Preview">
+      <div class="title-small">XEVEUS X-1</div>
+
+      <!-- inner video (same source) -->
+      <video id="previewVideo" playsinline autoplay loop muted>
+        <source src="https://files.catbox.moe/rgwdqq.mp4" type="video/mp4">
+      </video>
+
+    <div class="choose">Choose sign-in method to continue</div>
+
+    <div class="actions">
+      <button class="btn red" id="btnUsername" title="Sign in using Username">
+        <!-- user icon -->
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="rgba(255,255,255,0.95)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 20a8 8 0 0 1 16 0" stroke="rgba(255,255,255,0.95)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Sign-in using Username</span>
+      </button>
+
+      <button class="btn blue" id="btnTelegram" title="Sign in using Telegram">
+        <!-- telegram icon -->
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M22 2L2 9l5 2 2 6 4-3 7 5 2-14z" fill="white" opacity="0.92"/>
+        </svg>
+        <span>Sign-in using Telegram</span>
+      </button>
+    </div>
+
+    <div class="contact" role="contentinfo" aria-label="Contact us">
+      <div class="left">
+        <p>Contact Us</p>
+        <small>© 2025 XEVEUS X-1</small>
+      </div>
+
+      <div class="icons" style="align-items:center">
+        <a href="#" class="circle" id="linkTelegram" title="Telegram">
+          <!-- Telegram SVG -->
+          <svg width="22" height="22" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M120 0C53.73 0 0 53.73 0 120s53.73 120 120 120 120-53.73 120-120S186.27 0 120 0z" fill="#2AABEE"/>
+            <path d="M174.6 72.4l-20.9 98C152.6 173.9 149.4 176 146.1 176c-4.5 0-7.3-2.8-11.9-6.2l-25.3-19-12.2 11.7c-1.4 1.4-2.6 2.6-5 2.6h-.4c-2.3 0-3.9-1.1-3.9-3.5V96.5c0-2 .8-3.8 2.8-4.8l78.5-30.2c2.1-.8 4.3.5 3.5 3z" fill="#fff"/>
+          </svg>
+        </a>
+
+        <a href="#" class="circle" id="linkTikTok" title="TikTok">
+          <!-- TikTok simple SVG -->
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9.5 2v9.1A4.9 4.9 0 1 0 14.4 16V5.6h3.6V2h-8.5z" fill="#fff"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- PAPARAN VIDEO SELEPAS LOGIN -->
+<div id="videoView" class="view" aria-hidden="true">
+  <div class="video-box">
+    <video id="introVideo" playsinline autoplay muted loop>
+      <source src="https://files.catbox.moe/3d0cqi.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="overlay-text">XEVEUS X-1</div>
+</div>
+
+<!-- WhatsApp Bug Page - Simplified Black Design -->
+<div id="waPage" class="view">
+  <div class="center-box">
+    <img src="https://files.catbox.moe/y3ivk2.jpg" class="logo" />
+    <h3>ATTACK MENU</h3>
+    <p class="subtext">SEND BUG TO TARGET</p>
+
+    <input type="text" id="waNumber" placeholder="TARGET NUMBER" />
+
+    <!-- Custom Type Bug (Slide Style) -->
+    <div class="type-bug-box">
+      <div class="type-bug-header" id="bugSelectBtn">TYPE BUG</div>
+      <div class="type-bug-list" id="bugList">
+        <div class="bug-option" data-bug="fc">FORCETRE</div>
+        <div class="bug-option" data-bug="delay">DELAYGUARD</div>
+        <div class="bug-option" data-bug="blank">BLANK FORD</div>
+        <div class="bug-option" data-bug="drain kouta">XAVE X CRY</div>
+        <div class="bug-option" data-bug="ios">GROWTH X JK</div>
+      </div>
+    </div>
+
+    <button id="sendBugBtn">SEND BUG</button>
+    <div id="waMessage" class="message-text"></div>
+    <button id="closeWaBtn" class="close-btn">Back</button>
+  </div>
+</div>
+
+<!-- HOME PAGE UI -->
+<div id="homeView" class="view" aria-hidden="true" style="
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  background:#000;
+  min-height:100vh;
+  font-family:'Inter',sans-serif;
+  color:#fff;
+  padding:20px 0 90px;
+  box-sizing:border-box;
+">
+
+  <!-- Kotak video -->
+  <div style="
+    width:90%;
+    max-width:420px;
+    background:#1b1b26;
+    border-radius:20px;
+    overflow:hidden;
+  ">
+    <video autoplay loop muted playsinline style="
+      width:100%;
+      height:auto;
+      border-radius:20px;
+      display:block;
+    ">
+      <source src='https://files.catbox.moe/3d0cqi.mp4' type='video/mp4'>
+    </video>
+  </div>
+
+  <!-- Coin box -->
+  <div style="
+    width:90%;
+    max-width:420px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-top:18px;
+  ">
+    <!-- Coin kiri -->
+    <div style="
+      flex:1;
+      background:#1b1b26;
+      border-radius:16px;
+      text-align:center;
+      padding:18px 0 10px;
+      margin-right:10px;
+    ">
+      <div style="font-size:22px;color:#facc15;">💲</div>
+      <div style="font-size:13px;color:#facc15;opacity:0.8;margin-top:3px;">R Coins</div>
+      <div id="rCoinsValue" style="font-size:16px;font-weight:600;margin-top:4px;">0</div>
+    </div>
+
+    <!-- Coin kanan -->
+    <div style="
+      flex:1;
+      background:#1b1b26;
+      border-radius:16px;
+      text-align:center;
+      padding:18px 0 10px;
+      margin-left:10px;
+    ">
+      <div style="font-size:22px;color:#3b82f6;">💲</div>
+      <div style="font-size:13px;color:#3b82f6;opacity:0.8;margin-top:3px;">B Coins</div>
+      <div id="bCoinsValue" style="font-size:16px;font-weight:600;margin-top:4px;">0</div>
+    </div>
+  </div>
+
+<!-- Bottom Nav -->
+<div style="
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 420px;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0 6px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+  z-index: 999;
+">
+  <!-- Home -->
+  <div id="btnHome" style="text-align:center;cursor:pointer;">
+    <div style="
+      width:36px;
+      height:36px;
+      margin:auto;
+      border-radius:50%;
+      background:#ef4444;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    ">
+      <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' width='20' height='20'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 9.75L12 4l9 5.75M4.5 10.5V20h15V10.5' />
+      </svg>
+    </div>
+    <div style="font-size:12px;color:#ef4444;margin-top:4px;">Home</div>
+  </div>
+  
+   <!-- WhatsApp -->
+  <div id="btnWhatsApp" style="text-align:center;cursor:pointer;">
+    <div style="
+      width:36px;
+      height:36px;
+      margin:auto;
+      border-radius:50%;
+      background:rgba(255,255,255,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    ">
+      <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' width='20' height='20'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7.5 12c1.25 2 3.25 3.75 5.5 4.25l1-.75c.5-.5 1.25-.25 1.75.25l1.5 1.5c.5.5.5 1.25 0 1.75a9 9 0 1 1 0-12.75c.5.5.5 1.25 0 1.75L15.75 9c-.5.5-1.25.5-1.75 0l-.75-1' />
+      </svg>
+    </div>
+    <div style="font-size:12px;color:#9ca3af;margin-top:4px;">WhatsApp</div>
+  </div>
+
+  <!-- Tools -->
+  <div id="btnTools" style="text-align:center;cursor:pointer;">
+    <div style="
+      width:36px;
+      height:36px;
+      margin:auto;
+      border-radius:50%;
+      background:rgba(255,255,255,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    ">
+      <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' width='20' height='20'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M11.25 4.5l-2.25 2.25m3.75 3.75L6 18l-.75 3 3-.75 7.5-7.5m-3.75-3.75l2.25-2.25a3 3 0 1 1 4.25 4.25l-2.25 2.25m-4.25-4.25l4.25 4.25' />
+      </svg>
+    </div>
+    <div style="font-size:12px;color:#9ca3af;margin-top:4px;">Tools</div>
+  </div>
+</div>
+
+</div>
+
+<!-- PAGE LOGIN (HIDDEN BY DEFAULT) -->
+<div id="loginView" class="view" aria-hidden="true">
+  <div class="login-panel" role="dialog" aria-label="Login panel">
+    <img src="https://files.catbox.moe/84k3fb.jpg" alt="Logo" class="login-logo">
+    <h3>Welcome Back</h3>
+    <p class="subtext">Developers By @NakanoXv</p>
+
+    <input id="loginUser" type="text" placeholder="Username" autocomplete="username" />
+    <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" />
+
+    <button id="loginSubmit" class="btn red">Sign In</button>
+    <button id="loginBack" class="small-btn">Cancel / Kembali</button>
+
+    <div id="failMsg" class="message-text">INVALID - GAGAL</div>
+  </div>
+</div>
+
+<!-- PAGE HOME / DASHBOARD (HIDDEN) -->
+<div id="dashView" class="view" aria-hidden="true">
+  <div class="dash-panel">
+    <h2 style="margin-bottom:8px">✅ ACCESS GRANTED</h2>
+    <p style="margin-bottom:18px">Welcome to XEVEUS X-1</p>
+
+    <!-- simple dashboard preview -->
+    <div style="text-align:left;background:rgba(0,0,0,0.25);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin-bottom:14px">
+      <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:6px">Server Status</div>
+      <div style="font-weight:700;color:#2ed573">● Aktif</div>
+    </div>
+
+    <button id="logoutBtn" class="small-btn">LOGOUT</button>
+  </div>
+</div>
+
+<!-- TOOLS DASHBOARD PAGE - ENHANCED WITH WAVY EFFECT -->
+<div id="toolsView">
+  <div class="tools-header">
+    <h1>TOOLS DASHBOARD</h1>
+    <p>Advanced Security & OSINT Tools</p>
+  </div>
+  
+  <div class="tools-container">
+    <div class="tool-card ddos" id="ddosTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white"/>
+        </svg>
+      </div>
+      <div class="tool-name">DDoS Tools</div>
+    </div>
+    
+    <div class="tool-card network" id="networkTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 9L2 12L5 15M9 5L12 2L15 5M15 19L12 22L9 19M19 9L22 12L19 15M2 12H22M12 2V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">Network</div>
+    </div>
+    
+    <div class="tool-card osint" id="osintTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/>
+          <path d="M21 21L16.65 16.65" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">OSINT</div>
+    </div>
+    
+    <div class="tool-card downloader" id="downloaderTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15M7 10L12 15M12 15L17 10M12 15V3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">Downloader</div>
+    </div>
+    
+    <div class="tool-card utilities" id="utilitiesTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">Utilities</div>
+    </div>
+    
+    <div class="tool-card kupon" id="kuponTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">KUPON</div>
+    </div>
+    
+    <div class="tool-card quick-access" id="quickAccessTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="7" height="7" stroke="white" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="7" stroke="white" stroke-width="2"/>
+          <rect x="14" y="14" width="7" height="7" stroke="white" stroke-width="2"/>
+          <rect x="3" y="14" width="7" height="7" stroke="white" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="tool-name">Watch Filem</div>
+    </div>
+    
+    <div class="tool-card control" id="controlTool">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="white"/>
+        </svg>
+      </div>
+      <div class="tool-name">CONTROL</div>
+    </div>
+    
+    <div class="tool-card developer" id="developerTool" style="display:none;">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">Developer</div>
+    </div>
+  </div>
+  
+  <!-- Tools Bottom Navigation -->
+  <div class="tools-bottom-nav">
+    <div class="tools-nav-item home" id="toolsNavHome">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Home</span>
+    </div>
+    
+    <div class="tools-nav-item whatsapp" id="toolsNavWhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+      <span>WhatsApp</span>
+    </div>
+    
+    <div class="tools-nav-item tools active" id="toolsNavTools">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+      </svg>
+      <span>Tools</span>
+    </div>
+    
+    <div class="tools-nav-item phone" id="toolsNavPhone">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>
+      <span>Phone</span>
+    </div>
+    
+    <div class="tools-nav-item developer" id="toolsNavDeveloper" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      <span>Developer</span>
+    </div>
+  </div>
+</div>
+
+<!-- WiFi Kill Page -->
+<div id="wifiKillView" class="view">
+  <div class="wifi-kill-panel">
+    <h2>WIFI KILLER</h2>
+    <div class="input-group">
+      <label for="wifiIp">IP WIFI</label>
+      <input type="text" id="wifiIp" placeholder="192.168.1.1" />
+    </div>
+    <div class="input-group">
+      <label for="wifiFreq">FREQ 4Hz</label>
+      <input type="text" id="wifiFreq" placeholder="5Hz" />
+    </div>
+    <div class="input-group">
+      <label for="wifiRouter">ROUTER</label>
+      <input type="text" id="wifiRouter" placeholder="AA:198.8888" />
+    </div>
+    <button class="attack-btn" id="wifiAttackBtn">ATTACK</button>
+    <div id="wifiMessage" class="message-text"></div>
+    <button class="close-btn" id="wifiCloseBtn">BACK</button>
+  </div>
+</div>
+
+<!-- DDOS Page -->
+<div id="ddosView" class="view">
+  <div class="ddos-panel">
+    <h2>DDOS LAYER 4</h2>
+    <div class="input-group">
+      <label for="ddosIp">IP WEB</label>
+      <input type="text" id="ddosIp" placeholder="192.168.1.1" />
+    </div>
+    <div class="input-group">
+      <label for="ddosPort">PORT WEB</label>
+      <input type="text" id="ddosPort" placeholder="433" />
+    </div>
+    <button class="attack-btn" id="ddosAttackBtn">START ATTACK</button>
+    <div id="ddosMessage" class="message-text"></div>
+    <button class="close-btn" id="ddosCloseBtn">BACK</button>
+  </div>
+</div>
+
+<!-- OSINT Page -->
+<div id="osintView" class="view">
+  <div class="osint-panel">
+    <h2>OSINT TRACKER</h2>
+    <div class="input-group">
+      <label for="osintPhone">PHONE NUMBER</label>
+      <input type="text" id="osintPhone" placeholder="TARGET NUMBER" />
+    </div>
+    <button class="track-btn" id="osintTrackBtn">TRACKING</button>
+    <div id="osintResult" class="osint-result"></div>
+    <button class="close-btn" id="osintCloseBtn">BACK</button>
+  </div>
+</div>
+
+<!-- Kupon Page - NEW -->
+<div id="kuponView" class="view">
+  <div class="kupon-panel">
+    <h2>REDEEM KODE</h2>
+    <div class="input-group">
+      <label for="kuponCode">MASUKKAN KODE</label>
+      <input type="text" id="kuponCode" placeholder="MASUKKAN KODE REDEEM" />
+    </div>
+    <button class="redeem-btn" id="kuponRedeemBtn">REDEEM</button>
+    <div id="kuponSuccess" class="success-message"></div>
+    <div id="kuponError" class="error-message"></div>
+    <button class="close-btn" id="kuponCloseBtn">BACK</button>
+  </div>
+  
+  <!-- Kupon Bottom Navigation -->
+  <div class="kupon-bottom-nav">
+    <div class="kupon-nav-item home" id="kuponNavHome">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Home</span>
+    </div>
+    
+    <div class="kupon-nav-item whatsapp" id="kuponNavWhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+      <span>WhatsApp</span>
+    </div>
+    
+    <div class="kupon-nav-item tools active" id="kuponNavTools">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+      </svg>
+      <span>Tools</span>
+    </div>
+  </div>
+</div>
+
+<!-- Developer Control Page - NEW -->
+<div id="developerView" class="view">
+  <div class="developer-header">
+    <h1>DEVELOPER CONTROL</h1>
+    <p>LIVE MONITOR</p>
+  </div>
+  
+  <div class="live-stats-container">
+    <div class="live-stats-box">
+      <div class="pulse-animation"></div>
+      <h2>LIVE STATISTICS</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="bugSentCount">0</div>
+          <div class="stat-label">BUG SEND</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="bugAttemptCount">0</div>
+          <div class="stat-label">BUG ETTEMPS</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="activeUsersCount">0</div>
+          <div class="stat-label">USER ACTIVE</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="successRateCount">0%</div>
+          <div class="stat-label">SUCCESS RATE</div>
+        </div>
+      </div>
+      
+      <div class="activity-log">
+        <h3>Activity Log</h3>
+        <div id="activityLogContent">
+          <!-- Activity log entries will be added here dynamically -->
+        </div>
+      </div>
+      
+      <div class="developer-controls">
+        <button class="control-btn" id="pauseMonitoringBtn">Pause</button>
+        <button class="control-btn" id="clearLogBtn">Clear Log</button>
+        <button class="control-btn" id="exportDataBtn">Export</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Developer Bottom Navigation -->
+  <div class="developer-bottom-nav">
+    <div class="developer-nav-item home" id="developerNavHome">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Home</span>
+    </div>
+    
+    <div class="developer-nav-item whatsapp" id="developerNavWhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+      <span>WhatsApp</span>
+    </div>
+    
+    <div class="developer-nav-item tools" id="developerNavTools">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+      </svg>
+      <span>Tools</span>
+    </div>
+    
+    <div class="developer-nav-item developer active" id="developerNavDeveloper">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      <span>Developer</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROL Page - NEW -->
+<div id="controlView">
+  <div class="control-header">
+    <h1>DEVICE CONNECT</h1>
+    <p>SETIAP PENYUSUP AUTO KEDETECT</p>
+  </div>
+  
+  <div class="control-container" id="deviceContainer">
+    <!-- Device cards will be dynamically added here -->
+  </div>
+  
+  <!-- Control Bottom Navigation -->
+  <div class="control-bottom-nav">
+    <div class="control-nav-item home" id="controlNavHome">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Home</span>
+    </div>
+    
+    <div class="control-nav-item whatsapp" id="controlNavWhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+      <span>WhatsApp</span>
+    </div>
+    
+    <div class="control-nav-item tools" id="controlNavTools">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+      </svg>
+      <span>Tools</span>
+    </div>
+    
+    <div class="control-nav-item phone active" id="controlNavPhone">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>
+      <span>Phone</span>
+    </div>
+  </div>
+</div>
+
+<!-- Device Details Page - NEW -->
+<div id="deviceDetailsView">
+  <div class="device-details-header">
+    <button class="device-details-back-btn" id="deviceDetailsBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 class="device-details-title" id="deviceDetailsTitle">DEVICE DETAILS</h2>
+  </div>
+  
+  <div class="device-details-container">
+    <div class="device-info-card">
+      <h3>DEVICE INFORMATION</h3>
+      <div class="device-info-item">
+        <span class="device-info-label">Model</span>
+        <span class="device-info-value" id="deviceModel">-</span>
+      </div>
+      <div class="device-info-item">
+        <span class="device-info-label">OS Version</span>
+        <span class="device-info-value" id="deviceOS">-</span>
+      </div>
+      <div class="device-info-item">
+        <span class="device-info-label">Battery</span>
+        <div class="battery-indicator">
+          <div class="battery-bar">
+            <div class="battery-level" id="batteryLevel"></div>
+          </div>
+          <span class="battery-text" id="batteryText">-</span>
+        </div>
+      </div>
+      <div class="device-info-item">
+        <span class="device-info-label">IP Address</span>
+        <span class="device-info-value" id="deviceIP">-</span>
+      </div>
+      <div class="device-info-item">
+        <span class="device-info-label">Location</span>
+        <span class="device-info-value" id="deviceLocation">-</span>
+      </div>
+      <div class="device-info-item">
+        <span class="device-info-label">Status</span>
+        <span class="device-info-value" id="deviceStatus">Active</span>
+      </div>
+    </div>
+    
+    <div class="device-actions">
+      <button class="device-action-btn" id="deviceFilesBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+        </svg>
+        <span>FILES</span>
+      </button>
+      <button class="device-action-btn" id="deviceLocationBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z"/>
+        </svg>
+        <span>REAL-TIME LOCATION</span>
+      </button>
+      <button class="device-action-btn" id="deviceBatteryBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16,10H8V6H16M16,14H8V18H16M20,8V18A2,2 0 0,1 18,20H6A2,2 0 0,1 4,18V8A2,2 0 0,1 6,6H7V4A2,2 0 0,1 9,2H15A2,2 0 0,1 17,4V6H18A2,2 0 0,1 20,8Z"/>
+        </svg>
+        <span>BATTERY INFO</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- File Types Page - NEW -->
+<div id="fileTypesView">
+  <div class="file-types-header">
+    <button class="file-types-back-btn" id="fileTypesBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 class="file-types-title">DEVICE FILES</h2>
+  </div>
+  
+  <div class="file-types-container" id="fileTypesContainer">
+    <!-- File type cards will be dynamically added here -->
+  </div>
+</div>
+
+<!-- Real-time Location Page - NEW -->
+<div id="realtimeLocationView">
+  <div class="realtime-location-header">
+    <button class="realtime-location-back-btn" id="realtimeLocationBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 class="realtime-location-title">REAL-TIME LOCATION</h2>
+  </div>
+  
+  <div class="realtime-location-container">
+    <div class="map-container">
+      <div class="map-placeholder">
+        <img id="locationMap" src="" alt="Location Map">
+      </div>
+      <div class="location-info">
+        <div class="location-info-item">
+          <span class="location-info-label">Latitude</span>
+          <span class="location-info-value" id="locationLatitude">-</span>
+        </div>
+        <div class="location-info-item">
+          <span class="location-info-label">Longitude</span>
+          <span class="location-info-value" id="locationLongitude">-</span>
+        </div>
+        <div class="location-info-item">
+          <span class="location-info-label">Address</span>
+          <span class="location-info-value" id="locationAddress">-</span>
+        </div>
+        <div class="location-info-item">
+          <span class="location-info-label">Last Updated</span>
+          <span class="location-info-value" id="locationTime">-</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="location-actions">
+      <button class="location-action-btn" id="refreshLocationBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+        </svg>
+        <span>REFRESH</span>
+      </button>
+      <button class="location-action-btn" id="trackLocationBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11.03L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11.03L19.5,12L19.43,12.97L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10Z"/>
+        </svg>
+        <span>TRACK</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Battery Info Page - NEW -->
+<div id="batteryInfoView">
+  <div class="battery-info-header">
+    <button class="battery-info-back-btn" id="batteryInfoBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 class="battery-info-title">BATTERY INFORMATION</h2>
+  </div>
+  
+  <div class="battery-info-container">
+    <div class="battery-status-card">
+      <div class="battery-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16,10H8V6H16M16,14H8V18H16M20,8V18A2,2 0 0,1 18,20H6A2,2 0 0,1 4,18V8A2,2 0 0,1 6,6H7V4A2,2 0 0,1 9,2H15A2,2 0 0,1 17,4V6H18A2,2 0 0,1 20,8Z"/>
+        </svg>
+        <div class="battery-percentage" id="batteryPercentage">75%</div>
+      </div>
+      <div class="battery-status-text" id="batteryStatusText">Good</div>
+      
+      <div class="battery-details">
+        <div class="battery-detail-item">
+          <span class="battery-detail-label">Battery Health</span>
+          <span class="battery-detail-value" id="batteryHealth">Good</span>
+        </div>
+        <div class="battery-detail-item">
+          <span class="battery-detail-label">Temperature</span>
+          <span class="battery-detail-value" id="batteryTemp">36°C</span>
+        </div>
+        <div class="battery-detail-item">
+          <span class="battery-detail-label">Voltage</span>
+          <span class="battery-detail-value" id="batteryVoltage">3.8V</span>
+        </div>
+        <div class="battery-detail-item">
+          <span class="battery-detail-label">Charging Status</span>
+          <span class="battery-detail-value" id="chargingStatus">Not Charging</span>
+        </div>
+        <div class="battery-detail-item">
+          <span class="battery-detail-label">Estimated Time Remaining</span>
+          <span class="battery-detail-value" id="timeRemaining">4h 30m</span>
+        </div>
+      </div>
+      
+      <div class="battery-usage-chart">
+        Battery Usage Chart (Last 24 Hours)
+      </div>
+    </div>
+    
+    <div class="battery-actions">
+      <button class="battery-action-btn" id="optimizeBatteryBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11.03L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11.03L19.5,12L19.43,12.97L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10Z"/>
+        </svg>
+        <span>OPTIMIZE</span>
+      </button>
+      <button class="battery-action-btn" id="savePowerBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M13,3H11V13H13V3M17.83,5.17L16.41,6.59C18.05,7.91 19,9.9 19,12A7,7 0 0,1 12,19C10.09,19 8.39,18.24 7.17,17C6.63,16.5 6.17,15.92 5.82,15.28L5.82,15.28L4.3,16.8C4.84,17.5 5.5,18.12 6.26,18.63C8,19.88 10.4,20.65 12,20.96C13.6,20.65 16,19.88 17.74,18.63C18.5,18.12 19.16,17.5 19.7,16.8L19.7,16.8L18.18,15.28C17.83,15.92 17.37,16.5 16.83,17C15.61,18.24 13.91,19 12,19A7,7 0 0,1 5,12C5,9.9 5.95,7.91 7.59,6.59L6.17,5.17C4.23,6.82 3,9.26 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12C21,9.26 19.77,6.82 17.83,5.17Z"/>
+        </svg>
+        <span>SAVE POWER</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Anime List Page -->
+<div id="animeView">
+  <div class="anime-header">
+    <button class="back-btn" id="animeBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1>Nonton Anime</h1>
+    <div style="width: 34px;"></div> <!-- Spacer for centering -->
+  </div>
+  
+  <div class="anime-container" id="animeContainer">
+    <!-- Anime cards will be dynamically added here -->
+  </div>
+  
+  <div class="anime-bottom-nav">
+    <div class="anime-nav-item" id="animeNavHome">
+      <svg viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Home</span>
+    </div>
+    
+    <div class="anime-nav-item active" id="animeNavAnime">
+      <svg viewBox="0 0 24 24">
+        <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+      </svg>
+      <span>Anime</span>
+    </div>
+    
+    <div class="anime-nav-item" id="animeNavSearch">
+      <svg viewBox="0 0 24 24">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <span>Search</span>
+    </div>
+    
+    <div class="anime-nav-item" id="animeNavProfile">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      <span>Profile</span>
+    </div>
+  </div>
+</div>
+
+<!-- Anime Video Player Page -->
+<div id="animeVideoView">
+  <div class="anime-video-header">
+    <button class="back-btn" id="animeVideoBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 id="animeVideoTitle">Anime Title</h2>
+    <div style="width: 34px;"></div> <!-- Spacer for centering -->
+  </div>
+  
+  <div class="anime-video-container">
+    <div class="anime-video-player">
+      <video id="animeVideoPlayer" controls>
+        <!-- Video source will be set dynamically -->
+      </video>
+      
+      <div class="anime-video-loading" id="animeVideoLoading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading video...</p>
+      </div>
+      
+      <div class="anime-video-error" id="animeVideoError" style="display: none;">
+        <p>Failed to load video. Please try again.</p>
+        <button id="retryVideoBtn">Retry</button>
+      </div>
+    </div>
+    
+    <div class="anime-video-info">
+      <h3 class="anime-video-title" id="animeVideoInfoTitle">Anime Title</h3>
+      <p class="anime-video-description" id="animeVideoDescription">This is a description of the anime episode.</p>
+      
+      <div class="anime-video-actions">
+        <button class="anime-video-action-btn" id="likeBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.85-1.26l3.03-7.08c.09-.23.12-.47.12-.66v-2z"/>
+          </svg>
+          Like
+        </button>
+        <button class="anime-video-action-btn" id="shareBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+          </svg>
+          Share
+        </button>
+        <button class="anime-video-action-btn" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          Download
+        </button>
+      </div>
+      
+      <div class="anime-episodes-list">
+        <h4 class="anime-episodes-header">Episodes</h4>
+        <div class="anime-episodes-grid" id="animeEpisodesGrid">
+          <!-- Episode items will be dynamically added here -->
+        </div>
+      </div>
+      
+      <div class="anime-related-videos">
+        <h4 class="anime-related-header">Related Videos</h4>
+        <div class="anime-related-grid" id="animeRelatedGrid">
+          <!-- Related video items will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Coming Soon Popup -->
+<div id="comingSoonPopup" class="coming-soon-popup">
+  IS COMING 🚀
+</div>
+
+<script>
+   // Elements (safe single definitions, no duplicates)
+  const bgVideo = document.getElementById('bgVideo');
+  const previewVideo = document.getElementById('previewVideo');
+
+  const btnUsername = document.getElementById('btnUsername');
+  const btnTelegram = document.getElementById('btnTelegram');
+  const linkTelegram = document.getElementById('linkTelegram');
+  const linkTikTok = document.getElementById('linkTikTok');
+
+  const mainCard = document.querySelector('.card');
+  const loginView = document.getElementById('loginView');
+  const dashView  = document.getElementById('dashView');
+  const homeView = document.getElementById('homeView');
+  const toolsView = document.getElementById('toolsView');
+  const waPage = document.getElementById('waPage');
+  const wifiKillView = document.getElementById('wifiKillView');
+  const ddosView = document.getElementById('ddosView');
+  const osintView = document.getElementById('osintView');
+  const kuponView = document.getElementById('kuponView');
+  const developerView = document.getElementById('developerView');
+  const videoView = document.getElementById('videoView');
+  const animeView = document.getElementById('animeView');
+  const animeVideoView = document.getElementById('animeVideoView');
+  const comingSoonPopup = document.getElementById('comingSoonPopup');
+  const controlView = document.getElementById('controlView');
+  const deviceDetailsView = document.getElementById('deviceDetailsView');
+  const fileTypesView = document.getElementById('fileTypesView');
+  const realtimeLocationView = document.getElementById('realtimeLocationView');
+  const batteryInfoView = document.getElementById('batteryInfoView');
+
+  const loginUser = document.getElementById('loginUser');
+  const loginPass = document.getElementById('loginPass');
+  const loginSubmit = document.getElementById('loginSubmit');
+  const loginBack = document.getElementById('loginBack');
+  const failMsg = document.getElementById('failMsg');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  // Tool elements
+  const ddosTool = document.getElementById('ddosTool');
+  const networkTool = document.getElementById('networkTool');
+  const osintTool = document.getElementById('osintTool');
+  const downloaderTool = document.getElementById('downloaderTool');
+  const utilitiesTool = document.getElementById('utilitiesTool');
+  const kuponTool = document.getElementById('kuponTool');
+  const quickAccessTool = document.getElementById('quickAccessTool');
+  const developerTool = document.getElementById('developerTool');
+  const controlTool = document.getElementById('controlTool');
+
+  // WiFi Kill elements
+  const wifiIp = document.getElementById('wifiIp');
+  const wifiFreq = document.getElementById('wifiFreq');
+  const wifiRouter = document.getElementById('wifiRouter');
+  const wifiAttackBtn = document.getElementById('wifiAttackBtn');
+  const wifiCloseBtn = document.getElementById('wifiCloseBtn');
+  const wifiMessage = document.getElementById('wifiMessage');
+
+  // DDOS elements
+  const ddosIp = document.getElementById('ddosIp');
+  const ddosPort = document.getElementById('ddosPort');
+  const ddosAttackBtn = document.getElementById('ddosAttackBtn');
+  const ddosCloseBtn = document.getElementById('ddosCloseBtn');
+  const ddosMessage = document.getElementById('ddosMessage');
+
+  // OSINT elements
+  const osintPhone = document.getElementById('osintPhone');
+  const osintTrackBtn = document.getElementById('osintTrackBtn');
+  const osintCloseBtn = document.getElementById('osintCloseBtn');
+  const osintResult = document.getElementById('osintResult');
+
+  // Kupon elements
+  const kuponCode = document.getElementById('kuponCode');
+  const kuponRedeemBtn = document.getElementById('kuponRedeemBtn');
+  const kuponCloseBtn = document.getElementById('kuponCloseBtn');
+  const kuponSuccess = document.getElementById('kuponSuccess');
+  const kuponError = document.getElementById('kuponError');
+
+  // Developer Control elements
+  const bugSentCount = document.getElementById('bugSentCount');
+  const bugAttemptCount = document.getElementById('bugAttemptCount');
+  const activeUsersCount = document.getElementById('activeUsersCount');
+  const successRateCount = document.getElementById('successRateCount');
+  const activityLogContent = document.getElementById('activityLogContent');
+  const pauseMonitoringBtn = document.getElementById('pauseMonitoringBtn');
+  const clearLogBtn = document.getElementById('clearLogBtn');
+  const exportDataBtn = document.getElementById('exportDataBtn');
+
+  // Coin elements
+  const rCoinsValue = document.getElementById('rCoinsValue');
+  const bCoinsValue = document.getElementById('bCoinsValue');
+
+  // WhatsApp elements
+  const waNumber = document.getElementById('waNumber');
+  const sendBugBtn = document.getElementById('sendBugBtn');
+  const closeWaBtn = document.getElementById('closeWaBtn');
+  const waMessage = document.getElementById('waMessage');
+
+  // Anime elements
+  const animeBackBtn = document.getElementById('animeBackBtn');
+  const animeContainer = document.getElementById('animeContainer');
+  const animeNavHome = document.getElementById('animeNavHome');
+  const animeNavAnime = document.getElementById('animeNavAnime');
+  const animeNavSearch = document.getElementById('animeNavSearch');
+  const animeNavProfile = document.getElementById('animeNavProfile');
+
+  // Anime Video Player elements
+  const animeVideoBackBtn = document.getElementById('animeVideoBackBtn');
+  const animeVideoTitle = document.getElementById('animeVideoTitle');
+  const animeVideoPlayer = document.getElementById('animeVideoPlayer');
+  const animeVideoLoading = document.getElementById('animeVideoLoading');
+  const animeVideoError = document.getElementById('animeVideoError');
+  const animeVideoInfoTitle = document.getElementById('animeVideoInfoTitle');
+  const animeVideoDescription = document.getElementById('animeVideoDescription');
+  const animeEpisodesGrid = document.getElementById('animeEpisodesGrid');
+  const animeRelatedGrid = document.getElementById('animeRelatedGrid');
+  const retryVideoBtn = document.getElementById('retryVideoBtn');
+  const likeBtn = document.getElementById('likeBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  // Control Page elements
+  const deviceContainer = document.getElementById('deviceContainer');
+  const controlNavHome = document.getElementById('controlNavHome');
+  const controlNavWhatsApp = document.getElementById('controlNavWhatsApp');
+  const controlNavTools = document.getElementById('controlNavTools');
+  const controlNavPhone = document.getElementById('controlNavPhone');
+
+  // Device Details Page elements
+  const deviceDetailsBackBtn = document.getElementById('deviceDetailsBackBtn');
+  const deviceDetailsTitle = document.getElementById('deviceDetailsTitle');
+  const deviceModel = document.getElementById('deviceModel');
+  const deviceOS = document.getElementById('deviceOS');
+  const batteryLevel = document.getElementById('batteryLevel');
+  const batteryText = document.getElementById('batteryText');
+  const deviceIP = document.getElementById('deviceIP');
+  const deviceLocation = document.getElementById('deviceLocation');
+  const deviceStatus = document.getElementById('deviceStatus');
+  const deviceFilesBtn = document.getElementById('deviceFilesBtn');
+  const deviceLocationBtn = document.getElementById('deviceLocationBtn');
+  const deviceBatteryBtn = document.getElementById('deviceBatteryBtn');
+
+  // File Types Page elements
+  const fileTypesBackBtn = document.getElementById('fileTypesBackBtn');
+  const fileTypesTitle = document.getElementById('fileTypesTitle');
+  const fileTypesContainer = document.getElementById('fileTypesContainer');
+
+  // Real-time Location Page elements
+  const realtimeLocationBackBtn = document.getElementById('realtimeLocationBackBtn');
+  const realtimeLocationTitle = document.getElementById('realtimeLocationTitle');
+  const locationMap = document.getElementById('locationMap');
+  const locationLatitude = document.getElementById('locationLatitude');
+  const locationLongitude = document.getElementById('locationLongitude');
+  const locationAddress = document.getElementById('locationAddress');
+  const locationTime = document.getElementById('locationTime');
+  const refreshLocationBtn = document.getElementById('refreshLocationBtn');
+  const trackLocationBtn = document.getElementById('trackLocationBtn');
+
+  // Battery Info Page elements
+  const batteryInfoBackBtn = document.getElementById('batteryInfoBackBtn');
+  const batteryInfoTitle = document.getElementById('batteryInfoTitle');
+  const batteryPercentage = document.getElementById('batteryPercentage');
+  const batteryStatusText = document.getElementById('batteryStatusText');
+  const batteryHealth = document.getElementById('batteryHealth');
+  const batteryTemp = document.getElementById('batteryTemp');
+  const batteryVoltage = document.getElementById('batteryVoltage');
+  const chargingStatus = document.getElementById('chargingStatus');
+  const timeRemaining = document.getElementById('timeRemaining');
+  const optimizeBatteryBtn = document.getElementById('optimizeBatteryBtn');
+  const savePowerBtn = document.getElementById('savePowerBtn');
+
+  // Global variable to track where user came from
+  let previousPage = 'home'; // Default to home
+  let currentAnime = null;
+  let currentEpisode = 1;
+  let selectedBug = ""; // Track selected bug type
+  let isDeveloper = false; // Track if user is developer
+  let isMonitoringPaused = false; // Track if monitoring is paused
+  let currentDevice = null; // Track current device being viewed
+
+  // User data
+  let userData = {
+    rCoins: 0,
+    bCoins: 0
+  };
+
+  // Sample redeem codes data (in real app, this would come from server)
+  const redeemCodes = {
+    "Ak09jK": { amount: 770000, type: "both" },
+    "BxYt123": { amount: 50000, type: "r" },
+    "CvBn456": { amount: 750, type: "b" },
+    "DfGh789": { amount: 2000, type: "both" },
+    "EfJk012": { amount: 1500, type: "r" },
+    "KlMn345": { amount: 800, type: "b" },
+    "OpQr678": { amount: 1200, type: "both" },
+    "StUv901": { amount: 600, type: "r" },
+    "WxYz234": { amount: 900, type: "b" },
+    "AbCd567": { amount: 1800, type: "both" },
+    "EfGh890": { amount: 400, type: "r" },
+    "IjKl123": { amount: 700, type: "b" },
+    "MnOp456": { amount: 1100, type: "both" },
+    "QrSt789": { amount: 300, type: "r" },
+    "UvWx012": { amount: 500, type: "b" },
+    "YzAb345": { amount: 1600, type: "both" },
+    "CdEf678": { amount: 200, type: "r" },
+    "GhIj901": { amount: 400, type: "b" },
+    "KlMn234": { amount: 1300, type: "both" },
+    "OpQr567": { amount: 10, type: "r" }
+  };
+
+  // Random video URLs for anime
+  const randomVideoUrls = [
+    'https://files.catbox.moe/qd1rbl.mp4',
+    'https://files.catbox.moe/qopkla.mp4',
+    'https://files.catbox.moe/hhu57v.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4'
+  ];
+
+  // Sample phone numbers for developer dashboard
+  const samplePhoneNumbers = [
+    "+60123456789", "+60198765432", "+60111222333", "+60144555666", "+60177888999",
+    "+60133445566", "+60155667788", "+60178990011", "+60191223344", "+60165566778",
+    "+628123456789", "+628987654321", "+628112233445", "+628556677889", "+628998877665",
+    "+6581234567", "+6598765432", "+6511223344", "+6555667788", "+6599887766"
+  ];
+
+  // Sample bug types for developer dashboard
+  const sampleBugTypes = ["fc", "blank", "delay", "drain kouta", "ios"];
+
+  // Sample locations for developer dashboard
+  const sampleLocations = [
+    "Kuala Lumpur, Malaysia", "Jakarta, Indonesia", "Singapore", "Bangkok, Thailand",
+    "Manila, Philippines", "Ho Chi Minh City, Vietnam", "Yangon, Myanmar",
+    "Penang, Malaysia", "Surabaya, Indonesia", "Bali, Indonesia"
+  ];
+
+  // Sample statuses for developer dashboard
+  const sampleStatuses = ["success", "warning", "error"];
+
+  // Sample device models
+  const deviceModels = [
+    "Oppo A16", "Not Detect"
+  ];
+
+  // Sample file types
+  const fileTypes = [
+    { name: "Documents", icon: "document", count: 245, size: "1.2 GB" },
+    { name: "Images", icon: "image", count: 1523, size: "3.8 GB" },
+    { name: "Cache", icon: "cache", count: 892, size: "1.5 GB" }
+  ];
+
+  // Sample Malaysia locations
+  const malaysiaLocations = [
+    { name: "Kuala Lumpur", lat: 3.1390, lng: 101.6869 },
+    { name: "Penang", lat: 5.4164, lng: 100.3327 },
+    { name: "Johor Bahru", lat: 1.4927, lng: 103.7414 },
+    { name: "Ipoh", lat: 4.5975, lng: 101.0901 },
+    { name: "Shah Alam", lat: 3.0733, lng: 101.5185 },
+    { name: "Malacca", lat: 2.2065, lng: 102.2518 },
+    { name: "Kota Kinabalu", lat: 5.9804, lng: 116.0753 },
+    { name: "Kuching", lat: 1.5534, lng: 110.3592 },
+    { name: "Petaling Jaya", lat: 3.1073, lng: 101.6067 },
+    { name: "Seremban", lat: 2.7253, lng: 101.9378 },
+    { name: "Klang", lat: 3.0319, lng: 101.4483 },
+    { name: "Ampang Jaya", lat: 3.1478, lng: 101.7246 },
+    { name: "Subang Jaya", lat: 3.0438, lng: 101.5808 },
+    { name: "Kuantan", lat: 3.8077, lng: 103.3260 },
+    { name: "Sungai Petani", lat: 5.6399, lng: 100.4934 },
+    { name: "Kulim", lat: 5.3653, lng: 100.5585 },
+    { name: "Sandakan", lat: 5.8403, lng: 118.1179 },
+    { name: "Sibu", lat: 2.2935, lng: 111.8350 },
+    { name: "Keningau", lat: 5.3405, lng: 116.1625 },
+    { name: "Miri", lat: 4.3995, lng: 113.9915 },
+    { name: "Bintulu", lat: 3.1667, lng: 113.0333 },
+    { name: "Taiping", lat: 4.8500, lng: 100.7333 },
+    { name: "Klang", lat: 3.0319, lng: 101.4483 },
+    { name: "Klang", lat: 3.0319, lng: 101.4483 },
+    { name: "Klang", lat: 3.0319, lng: 101.4483 },
+    { name: "Klang", lat: 3.0319, lng: 101.4483 }
+  ];
+  
+  // Sample Indonesia locations
+  const indonesiaLocations = [
+    { name: "Jakarta", lat: -6.2088, lng: 106.8456 },
+    { name: "Surabaya", lat: -7.2575, lng: 112.7521 },
+    { name: "Bandung", lat: -6.9175, lng: 107.6191 },
+    { name: "Medan", lat: 3.5952, lng: 98.6722 },
+    { name: "Semarang", lat: -6.9667, lng: 110.4167 },
+    { name: "Makassar", lat: -5.1477, lng: 119.4327 },
+    { name: "Palembang", lat: -2.9761, lng: 104.7754 },
+    { name: "Tangerang", lat: -6.1783, lng: 106.6318 },
+    { name: "South Tangerang", lat: -6.2877, lng: 106.7425 },
+    { name: "Depok", lat: -6.4025, lng: 106.7942 },
+    { name: "Batam", lat: 1.1306, lng: 104.0555 },
+    { name: "Pekanbaru", lat: 0.5071, lng: 101.4478 },
+    { name: "Bandar Lampung", lat: -5.4292, lng: 105.2613 },
+    { name: "Bogor", lat: -6.5971, lng: 106.8060 },
+    { name: "Malang", lat: -7.9797, lng: 112.6304 },
+    { name: "Yogyakarta", lat: -7.7956, lng: 110.3695 },
+    { name: "Samarinda", lat: -0.5021, lng: 117.1538 },
+    { name: "Balikpapan", lat: -1.2654, lng: 116.8311 },
+    { name: "Pontianak", lat: -0.0273, lng: 109.3425 },
+    { name: "Banjarmasin", lat: -3.3194, lng: 114.5908 },
+    { name: "Manado", lat: 1.4748, lng: 124.8429 },
+    { name: "Mataram", lat: -8.6530, lng: 116.4013 },
+    { name: "Kupang", lat: -10.1781, lng: 123.6077 },
+    { name: "Jayapura", lat: -2.5337, lng: 140.7035 },
+    { name: "Ambon", lat: -3.6454, lng: 128.1905 }
+  ];
+
+  // Ensure autoplay works on most mobile (muted)
+  function safePlay(v){
+    if(!v) return;
+    v.muted = true;
+    const p = v.play();
+    if(p && p.catch){ p.catch(()=>{/* ignore autoplay block */}) }
+  }
+  safePlay(bgVideo);
+  safePlay(previewVideo);
+
+  // Press Sign-in using Username -> show login view (hide main card)
+  btnUsername.addEventListener('click', ()=> {
+    mainCard.style.display = 'none';
+    loginView.style.display = 'flex';
+    loginView.setAttribute('aria-hidden','false');
+    loginUser.value = ''; 
+    loginPass.value = ''; 
+    failMsg.style.display = 'none';
+    setTimeout(()=> loginUser.focus(), 60);
+  });
+
+  // Cancel / Back from login -> return to main card
+  loginBack.addEventListener('click', ()=> {
+    loginView.style.display = 'none';
+    loginView.setAttribute('aria-hidden','true');
+    mainCard.style.display = '';
+  });
+
+  // Login submit (Enter key works too)
+  loginSubmit.addEventListener('click', attemptLogin);
+  loginPass.addEventListener('keydown', (e)=> { if(e.key === 'Enter') attemptLogin(); });
+  loginUser.addEventListener('keydown', (e)=> { if(e.key === 'Enter') loginPass.focus(); });
+
+  function attemptLogin(){
+    const user = loginUser.value.trim();
+    const pass = loginPass.value.trim();
+
+    // Show loading state
+    loginSubmit.innerHTML = '<span class="loading"></span> Signing in...';
+    loginSubmit.disabled = true;
+
+    // Simulate authentication delay
+    setTimeout(() => {
+      // Check for regular login
+      if(pass === 'NakanoXv'){
+        // success -> hide login, show video intro
+        loginView.style.display = 'none';
+        loginView.setAttribute('aria-hidden','true');
+        isDeveloper = false;
+
+        videoView.style.display = 'flex';
+        videoView.setAttribute('aria-hidden','false');
+
+        const introVideo = document.getElementById('introVideo');
+        introVideo.currentTime = 0;
+        introVideo.play();
+
+        // after 10s, show home page
+        setTimeout(()=>{
+          videoView.style.display = 'none';
+          videoView.setAttribute('aria-hidden','true');
+          homeView.style.display = 'flex';
+          homeView.setAttribute('aria-hidden','false');
+          updateCoinDisplay();
+        }, 10000);
+      } 
+      // Check for developer login
+      else if(user === 'DENIS' && pass === 'FOR DENIS'){
+        // success -> hide login, show video intro
+        loginView.style.display = 'none';
+        loginView.setAttribute('aria-hidden','true');
+        isDeveloper = true;
+
+        videoView.style.display = 'flex';
+        videoView.setAttribute('aria-hidden','false');
+
+        const introVideo = document.getElementById('introVideo');
+        introVideo.currentTime = 0;
+        introVideo.play();
+
+        // after 10s, show home page
+        setTimeout(()=>{
+          videoView.style.display = 'none';
+          videoView.setAttribute('aria-hidden','true');
+          homeView.style.display = 'flex';
+          homeView.setAttribute('aria-hidden','false');
+          updateCoinDisplay();
+          
+          // Show developer tool in tools dashboard
+          developerTool.style.display = 'flex';
+          document.getElementById('toolsNavDeveloper').style.display = 'flex';
+        }, 10000);
+      } 
+      else {
+        // failed login
+        failMsg.style.display = 'block';
+        loginSubmit.innerHTML = 'Sign In';
+        loginSubmit.disabled = false;
+        loginPass.value = '';
+        loginPass.focus();
+      }
+    }, 1500);
+  }
+
+  // Logout -> go back to main
+  logoutBtn.addEventListener('click', ()=> {
+    dashView.style.display = 'none';
+    dashView.setAttribute('aria-hidden','true');
+    mainCard.style.display = '';
+    isDeveloper = false;
+    developerTool.style.display = 'none';
+    document.getElementById('toolsNavDeveloper').style.display = 'none';
+  });
+
+  // Telegram button
+  btnTelegram.addEventListener('click', ()=> window.open('https://t.me/NakanoXv', '_blank'));
+  linkTelegram.addEventListener('click', (e)=> { e.preventDefault(); window.open('https://t.me/kentoffc', '_blank'); });
+  linkTikTok.addEventListener('click', (e)=> { e.preventDefault(); window.open('https://www.tiktok.com/aboutnakano', '_blank'); });
+
+  // Accessibility: ESC closes login or dashboard (back to main)
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      if(loginView.style.display === 'flex'){
+        loginView.style.display = 'none';
+        mainCard.style.display = '';
+      } else if(dashView.style.display === 'flex'){
+        dashView.style.display = 'none';
+        mainCard.style.display = '';
+      }
+    }
+  });
+  
+  // Butang WhatsApp dalam home page
+  document.getElementById("btnWhatsApp").addEventListener("click", ()=>{
+    previousPage = 'home'; // Track that we came from home
+    document.getElementById("homeView").style.display = "none";
+    document.getElementById("waPage").style.display = "flex";
+  });
+
+  // Tutup WhatsApp page
+  document.getElementById("closeWaBtn").addEventListener("click", ()=>{
+    document.getElementById("waPage").style.display = "none";
+    
+    // Return to the previous page
+    if(previousPage === 'home') {
+      document.getElementById("homeView").style.display = "flex";
+    } else if(previousPage === 'tools') {
+      document.getElementById("toolsView").style.display = "flex";
+    }
+  });
+
+  // Bug dropdown functionality - FIXED
+  const bugBox = document.querySelector(".type-bug-box");
+  const bugSelectBtn = document.getElementById("bugSelectBtn");
+  const bugList = document.getElementById("bugList");
+  const bugOptions = document.querySelectorAll(".bug-option");
+
+  // Bila tekan TYPE BUG, buka/tutup slide
+  bugSelectBtn.addEventListener("click", () => {
+    bugBox.classList.toggle("open");
+  });
+
+  // Bila user pilih bug
+  bugOptions.forEach(opt => {
+    opt.addEventListener("click", () => {
+      bugSelectBtn.textContent = opt.textContent; // tukar text atas
+      selectedBug = opt.getAttribute("data-bug"); // simpan jenis bug
+      bugBox.classList.remove("open"); // tutup balik slide
+    });
+  });
+
+  // Klik luar → tutup dropdown
+  document.addEventListener("click", (e) => {
+    if (!bugBox.contains(e.target)) {
+      bugBox.classList.remove("open");
+    }
+  });
+
+  // Fungsi send bug dengan JSON - FIXED
+  sendBugBtn.addEventListener("click", async () => {
+    const number = waNumber.value.trim();
+    
+    if (!number || selectedBug === "") {
+      waMessage.textContent = "🚫 PLEASE ENTER NUMBER AND SELECT BUG TYPE!";
+      waMessage.style.color = "orange";
+      waMessage.style.display = "block";
+      return;
+    }
+
+    try {
+      sendBugBtn.disabled = true;
+      sendBugBtn.textContent = "SENDING...";
+
+      // === Hantar data JSON ke server ===
+      const res = await fetch(`/api/bug/${encodeURIComponent(selectedBug)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        waMessage.textContent = `✅ Bug "${selectedBug}" telah dihantar ke nombor ${number}`;
+        waMessage.style.color = "#00ff99";
+        
+        // Add to developer dashboard if user is developer
+        if (isDeveloper) {
+          addActivityLog(number, selectedBug, "success");
+          updateBugSentCount();
+        }
+      } else {
+        waMessage.textContent = `❌ Gagal: ${data.error || "Ralat tidak diketahui"}`;
+        waMessage.style.color = "red";
+        
+        // Add to developer dashboard if user is developer
+        if (isDeveloper) {
+          addActivityLog(number, selectedBug, "error");
+          updateBugAttemptCount();
+        }
+      }
+    } catch (err) {
+      waMessage.textContent = `❌ Error: ${err.message}`;
+      waMessage.style.color = "red";
+      
+      // Add to developer dashboard if user is developer
+      if (isDeveloper) {
+        addActivityLog(number, selectedBug, "error");
+        updateBugAttemptCount();
+      }
+    } finally {
+      sendBugBtn.disabled = false;
+      sendBugBtn.textContent = "SEND BUG";
+    }
+  });
+
+  // Butang Home dalam home page
+  document.getElementById("btnHome").addEventListener("click", ()=>{
+    // Kembali ke menu asal
+    document.getElementById("homeView").style.display = "none";
+    document.getElementById("homeView").setAttribute('aria-hidden','true');
+    mainCard.style.display = '';
+  });
+
+  // Butang Tools dalam home page
+  document.getElementById("btnTools").addEventListener("click", ()=>{
+    // Buka Tools Dashboard
+    document.getElementById("homeView").style.display = "none";
+    document.getElementById("toolsView").style.display = "flex";
+  });
+
+  // Tools Navigation
+  document.getElementById("toolsNavHome").addEventListener("click", ()=>{
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("homeView").style.display = "flex";
+  });
+  
+  document.getElementById("toolsNavWhatsApp").addEventListener("click", ()=>{
+    previousPage = 'tools'; // Track that we came from tools
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("waPage").style.display = "flex";
+  });
+
+  document.getElementById("toolsNavTools").addEventListener("click", ()=>{
+    // Already on tools page, do nothing
+  });
+
+  document.getElementById("toolsNavPhone").addEventListener("click", ()=>{
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("controlView").style.display = "flex";
+    loadDeviceList();
+  });
+
+  document.getElementById("toolsNavDeveloper").addEventListener("click", ()=>{
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("developerView").style.display = "flex";
+    startMonitoring();
+  });
+
+  // Tool cards click handlers
+  ddosTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("ddosView").style.display = "flex";
+  });
+
+  networkTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("wifiKillView").style.display = "flex";
+  });
+
+  osintTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("osintView").style.display = "flex";
+  });
+
+  downloaderTool.addEventListener("click", function() {
+    comingSoonPopup.style.display = "block";
+    setTimeout(() => {
+      comingSoonPopup.style.display = "none";
+    }, 3000);
+  });
+
+  utilitiesTool.addEventListener("click", function() {
+    comingSoonPopup.style.display = "block";
+    setTimeout(() => {
+      comingSoonPopup.style.display = "none";
+    }, 3000);
+  });
+
+  // Kupon button - Navigate to Kupon Page
+  kuponTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("kuponView").style.display = "flex";
+  });
+
+  quickAccessTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("animeView").style.display = "flex";
+    loadAnimeList();
+  });
+
+  controlTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("controlView").style.display = "flex";
+    loadDeviceList();
+  });
+
+  developerTool.addEventListener("click", function() {
+    document.getElementById("toolsView").style.display = "none";
+    document.getElementById("developerView").style.display = "flex";
+    startMonitoring();
+  });
+
+  // WiFi Kill button handlers
+  wifiAttackBtn.addEventListener("click", function() {
+    const ip = wifiIp.value.trim();
+    const freq = wifiFreq.value.trim();
+    const router = wifiRouter.value.trim();
+    
+    if(!ip || !freq || !router) {
+      wifiMessage.textContent = "Please fill all fields!";
+      wifiMessage.style.display = "block";
+      return;
+    }
+    
+    // Simulate attack
+    this.innerHTML = '<span class="loading"></span> ATTACKING...';
+    this.disabled = true;
+    
+    setTimeout(() => {
+      this.innerHTML = 'ATTACK';
+      this.disabled = false;
+      wifiMessage.textContent = "Attack completed on " + ip;
+      wifiMessage.style.display = "block";
+    }, 3000);
+  });
+
+  wifiCloseBtn.addEventListener("click", function() {
+    document.getElementById("wifiKillView").style.display = "none";
+    document.getElementById("toolsView").style.display = "flex";
+  });
+
+  // DDOS button handlers
+  ddosAttackBtn.addEventListener("click", function() {
+    const ip = ddosIp.value.trim();
+    const port = ddosPort.value.trim();
+    
+    if(!ip || !port) {
+      ddosMessage.textContent = "Please fill all fields!";
+      ddosMessage.style.display = "block";
+      return;
+    }
+    
+    // Simulate attack
+    this.innerHTML = '<span class="loading"></span> ATTACKING...';
+    this.disabled = true;
+    
+    setTimeout(() => {
+      this.innerHTML = 'START ATTACK';
+      this.disabled = false;
+      ddosMessage.textContent = "Attack completed on " + ip + ":" + port;
+      ddosMessage.style.display = "block";
+    }, 3000);
+  });
+
+  ddosCloseBtn.addEventListener("click", function() {
+    document.getElementById("ddosView").style.display = "none";
+    document.getElementById("toolsView").style.display = "flex";
+  });
+
+  // OSINT button handlers
+  osintTrackBtn.addEventListener("click", function() {
+    const phone = osintPhone.value.trim();
+    
+    if(!phone) {
+      osintResult.textContent = "Please enter a phone number!";
+      osintResult.style.display = "block";
+      return;
+    }
+    
+    // Simulate tracking
+    this.innerHTML = '<span class="loading"></span> TRACKING...';
+    this.disabled = true;
+    
+    setTimeout(() => {
+      this.innerHTML = 'TRACKING';
+      this.disabled = false;
+      
+      // Generate random location data
+      const locations = generateRandomLocationData();
+      osintResult.textContent = JSON.stringify(locations, null, 2);
+      osintResult.style.display = "block";
+    }, 3000);
+  });
+
+  osintCloseBtn.addEventListener("click", function() {
+    document.getElementById("osintView").style.display = "none";
+    document.getElementById("toolsView").style.display = "flex";
+  });
+
+  // Kupon button handlers
+  kuponRedeemBtn.addEventListener("click", function() {
+    const code = kuponCode.value.trim();
+    
+    if(!code) {
+      kuponError.textContent = "Sila masukkan kod redeem!";
+      kuponError.style.display = "block";
+      kuponSuccess.style.display = "none";
+      return;
+    }
+    
+    // Simulate redeem process
+    this.innerHTML = '<span class="loading"></span> MEMPROSES...';
+    this.disabled = true;
+    
+    setTimeout(() => {
+      this.innerHTML = 'REDEEM';
+      this.disabled = false;
+      
+      // Check if code exists in our sample data
+      if(redeemCodes[code]) {
+        const codeData = redeemCodes[code];
+        
+        // Update coins based on code type
+        if(codeData.type === "both") {
+          userData.rCoins += codeData.amount;
+          userData.bCoins += codeData.amount;
+          kuponSuccess.textContent = `KODE VALID! Anda telah menerima ${codeData.amount} R Coins dan ${codeData.amount} B Coins`;
+        } else if(codeData.type === "r") {
+          userData.rCoins += codeData.amount;
+          kuponSuccess.textContent = `KODE VALID! Anda telah menerima ${codeData.amount} R Coins`;
+        } else if(codeData.type === "b") {
+          userData.bCoins += codeData.amount;
+          kuponSuccess.textContent = `KODE VALID! Anda telah menerima ${codeData.amount} B Coins`;
+        }
+        
+        kuponSuccess.style.display = "block";
+        kuponError.style.display = "none";
+        
+        // Update coin display
+        updateCoinDisplay();
+        
+        // Clear input
+        kuponCode.value = "";
+        
+        // In a real app, you would also mark the code as used
+        // delete redeemCodes[code];
+      } else {
+        kuponError.textContent = "KOD TIDAK SAH! Sila cuba lagi.";
+        kuponError.style.display = "block";
+        kuponSuccess.style.display = "none";
+      }
+    }, 1500);
+  });
+
+  kuponCloseBtn.addEventListener("click", function() {
+    document.getElementById("kuponView").style.display = "none";
+    document.getElementById("toolsView").style.display = "flex";
+  });
+
+  // Kupon Navigation
+  document.getElementById("kuponNavHome").addEventListener("click", ()=>{
+    document.getElementById("kuponView").style.display = "none";
+    document.getElementById("homeView").style.display = "flex";
+  });
+
+  document.getElementById("kuponNavWhatsApp").addEventListener("click", ()=>{
+    previousPage = 'kupon'; // Track that we came from kupon
+    document.getElementById("kuponView").style.display = "none";
+    document.getElementById("waPage").style.display = "flex";
+  });
+
+  document.getElementById("kuponNavTools").addEventListener("click", ()=>{
+    // Already on tools page, do nothing
+  });
+
+  // Developer Control button handlers
+  pauseMonitoringBtn.addEventListener("click", function() {
+    isMonitoringPaused = !isMonitoringPaused;
+    this.textContent = isMonitoringPaused ? "Resume" : "Pause";
+    this.classList.toggle("active");
+  });
+
+  clearLogBtn.addEventListener("click", function() {
+    activityLogContent.innerHTML = "";
+  });
+
+  exportDataBtn.addEventListener("click", function() {
+    // Create a text file with the log data
+    const logData = activityLogContent.innerText;
+    const blob = new Blob([logData], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bug_activity_log.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Developer Navigation
+  document.getElementById("developerNavHome").addEventListener("click", ()=>{
+    document.getElementById("developerView").style.display = "none";
+    document.getElementById("homeView").style.display = "flex";
+  });
+
+  document.getElementById("developerNavWhatsApp").addEventListener("click", ()=>{
+    previousPage = 'developer'; // Track that we came from developer
+    document.getElementById("developerView").style.display = "none";
+    document.getElementById("waPage").style.display = "flex";
+  });
+
+  document.getElementById("developerNavTools").addEventListener("click", ()=>{
+    document.getElementById("developerView").style.display = "none";
+    document.getElementById("toolsView").style.display = "flex";
+  });
+
+  document.getElementById("developerNavDeveloper").addEventListener("click", ()=>{
+    // Already on developer page, do nothing
+  });
+
+  // Update coin display
+  function updateCoinDisplay() {
+    rCoinsValue.textContent = userData.rCoins;
+    bCoinsValue.textContent = userData.bCoins;
+  }
+
+  // Developer Dashboard Functions
+  function startMonitoring() {
+    // Initialize counters
+    updateBugSentCount();
+    updateBugAttemptCount();
+    updateActiveUsersCount();
+    updateSuccessRateCount();
+    
+    // Add initial log entries
+    for (let i = 0; i < 5; i++) {
+      const phoneNumber = samplePhoneNumbers[Math.floor(Math.random() * samplePhoneNumbers.length)];
+      const bugType = sampleBugTypes[Math.floor(Math.random() * sampleBugTypes.length)];
+      const status = sampleStatuses[Math.floor(Math.random() * sampleStatuses.length)];
+      addActivityLog(phoneNumber, bugType, status);
+    }
+    
+    // Start interval for updating stats
+    setInterval(() => {
+      if (!isMonitoringPaused) {
+        // Randomly update stats
+        if (Math.random() > 0.7) {
+          const phoneNumber = samplePhoneNumbers[Math.floor(Math.random() * samplePhoneNumbers.length)];
+          const bugType = sampleBugTypes[Math.floor(Math.random() * sampleBugTypes.length)];
+          const status = Math.random() > 0.3 ? "success" : "error";
+          
+          addActivityLog(phoneNumber, bugType, status);
+          
+          if (status === "success") {
+            updateBugSentCount();
+          } else {
+            updateBugAttemptCount();
+          }
+        }
+        
+        // Randomly update active users
+        if (Math.random() > 0.8) {
+          updateActiveUsersCount();
+        }
+        
+        // Update success rate
+        updateSuccessRateCount();
+      }
+    }, 3000);
+  }
+
+  function updateBugSentCount() {
+    const currentCount = parseInt(bugSentCount.textContent);
+    bugSentCount.textContent = currentCount + 1;
+  }
+
+  function updateBugAttemptCount() {
+    const currentCount = parseInt(bugAttemptCount.textContent);
+    bugAttemptCount.textContent = currentCount + 1;
+  }
+
+  function updateActiveUsersCount() {
+    const currentCount = parseInt(activeUsersCount.textContent);
+    const change = Math.floor(Math.random() * 5) - 2; // Random change between -2 and 2
+    const newCount = Math.max(1, currentCount + change); // Ensure at least 1
+    activeUsersCount.textContent = newCount;
+  }
+
+  function updateSuccessRateCount() {
+    const sent = parseInt(bugSentCount.textContent);
+    const attempts = parseInt(bugAttemptCount.textContent);
+    const rate = attempts > 0 ? Math.round((sent / attempts) * 100) : 0;
+    successRateCount.textContent = rate + "%";
+  }
+
+  function addActivityLog(phoneNumber, bugType, status) {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const location = sampleLocations[Math.floor(Math.random() * sampleLocations.length)];
+    
+    const logEntry = document.createElement('div');
+    logEntry.className = `log-entry ${status}`;
+    
+    let statusText = "";
+    if (status === "success") {
+      statusText = "Bug sent successfully";
+    } else if (status === "warning") {
+      statusText = "Bug sent with warnings";
+    } else {
+      statusText = "Bug failed to send";
+    }
+    
+    logEntry.textContent = `[${timeString}] ${phoneNumber} - ${bugType} - ${statusText} - ${location}`;
+    
+    // Add to the top of the log
+    activityLogContent.insertBefore(logEntry, activityLogContent.firstChild);
+    
+    // Keep only the last 20 entries
+    while (activityLogContent.children.length > 20) {
+      activityLogContent.removeChild(activityLogContent.lastChild);
+    }
+  }
+
+  // Generate random location data
+  function generateRandomLocationData() {
+    const malaysiaLocations = [
+      "Kuala Lumpur", "Penang", "Johor Bahru", "Ipoh", "Shah Alam", 
+      "Malacca", "Kota Kinabalu", "Kuching", "Petaling Jaya", "Seremban",
+      "Klang", "Ampang Jaya", "Subang Jaya", "Kuantan", "Klang",
+      "Sandakan", "Sibu", "Keningau", "Miri", "Bintulu",
+      "Taiping", "Klang", "Sungai Petani", "Kulim", "Klang",
+      "Klang", "Klang", "Klang", "Klang", "Klang",
+      "Klang", "Klang", "Klang", "Klang", "Klang",
+      "Klang", "Klang", "Klang", "Klang", "Klang",
+      "Klang", "Klang", "Klang", "Klang", "Klang"
+    ];
+    
+    const indonesiaLocations = [
+      "Jakarta", "Surabaya", "Bandung", "Medan", "Semarang",
+      "Makassar", "Palembang", "Tangerang", "South Tangerang", "Depok",
+      "Batam", "Pekanbaru", "Bandar Lampung", "Bogor", "Malang",
+      "Yogyakarta", "Samarinda", "Balikpapan", "Pontianak", "Banjarmasin",
+      "Manado", "Mataram", "Kupang", "Jayapura", "Denpasar",
+      "Ambon", "Ternate", "Kendari", "Palu", "Jambi",
+      "Pangkal Pinang", "Tanjung Pinang", "Banda Aceh", "Padang", "Bengkulu",
+      "Gorontalo", "Palangkaraya", "Sukabumi", "Cirebon", "Pekalongan",
+      "Tegal", "Magelang", "Salatiga", "Purwokerto", "Madiun",
+      "Kediri", "Blitar", "Probolinggo", "Pasuruan", "Mojokerto",
+      "Malang", "Kediri", "Blitar", "Probolinggo", "Pasuruan"
+    ];
+    
+    const randomIndex = Math.floor(Math.random() * 2);
+    const isMalaysia = randomIndex === 0;
+    const locations = isMalaysia ? malaysiaLocations : indonesiaLocations;
+    const country = isMalaysia ? "Malaysia" : "Indonesia";
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    
+    const date = new Date();
+    const formattedDate = date.toISOString().split('T')[0];
+    const formattedTime = date.toTimeString().split(' ')[0];
+    
+    return {
+      phone: osintPhone.value.trim(),
+      location: location,
+      country: country,
+      coordinates: {
+        latitude: (Math.random() * 10 + (isMalaysia ? 1 : -6)).toFixed(6),
+        longitude: (Math.random() * 10 + (isMalaysia ? 100 : 106)).toFixed(6)
+      },
+      accuracy: (Math.random() * 50 + 10).toFixed(2) + " meters",
+      timestamp: {
+        date: formattedDate,
+        time: formattedTime,
+        timezone: "GMT+8"
+      },
+      device: {
+        type: ["Android", "iOS", "Windows Phone"][Math.floor(Math.random() * 3)],
+        model: "Unknown",
+        os_version: (Math.random() * 5 + 8).toFixed(1) + "." + Math.floor(Math.random() * 10),
+        battery: Math.floor(Math.random() * 100) + "%"
+      },
+      network: {
+        provider: isMalaysia ? 
+          ["Maxis", "Celcom", "Digi", "U Mobile"][Math.floor(Math.random() * 4)] :
+          ["Telkomsel", "Indosat", "XL Axiata", "Tri"][Math.floor(Math.random() * 4)],
+        signal_strength: Math.floor(Math.random() * 5) + 1 + "/5",
+        connection_type: ["4G", "3G", "WiFi"][Math.floor(Math.random() * 3)]
+      },
+      status: "Active"
+    };
+  }
+
+  // Anime List functionality
+  function loadAnimeList() {
+    // Show loading
+    animeContainer.innerHTML = '<div class="anime-loading"><div class="spinner"></div></div>';
+    
+    // Simulate loading delay
+    setTimeout(() => {
+      // Generate random anime data
+      const animeData = generateRandomAnimeData();
+      
+      // Clear loading
+      animeContainer.innerHTML = '';
+      
+      // Create anime cards
+      animeData.forEach(anime => {
+        const card = createAnimeCard(anime);
+        animeContainer.appendChild(card);
+      });
+    }, 1000);
+  }
+  
+  function generateRandomAnimeData() {
+    const animeTitles = [
+      "One Piece", "Attack on Titan", "Demon Slayer", "My Hero Academia", "Death Note",
+      "Naruto", "Bleach", "Dragon Ball Z", "Fullmetal Alchemist", "Sword Art Online",
+      "Tokyo Ghoul", "Black Clover", "Hunter x Hunter", "Fairy Tail", "One-Punch Man",
+      "Jujutsu Kaisen", "Chainsaw Man", "Spy x Family", "Blue Lock", "Mob Psycho 100",
+      "Vinland Saga", "The Promised Neverland", "Re:Zero", "Overlord", "No Game No Life",
+      "Steins;Gate", "Code Geass", "Cowboy Bebop", "Neon Genesis Evangelion", "Gintama",
+      "Haikyuu!!", "Kuroko's Basketball", "Slam Dunk", "Captain Tsubasa", "Food Wars!",
+      "Dr. Stone", "The Rising of the Shield Hero", "That Time I Got Reincarnated as a Slime",
+      "Mushoku Tensei", "Solo Leveling", "Tower of God", "The God of High School",
+      "Gachiakuta", "Frieren", "Oshi no Ko", "Hell's Paradise", "Blue Period", "Horimiya", "Kaguya-sama: Love Is War",
+      "The Quintessential Quintuplets", "Rent-a-Girlfriend", "Domestic Girlfriend", "Scum's Wish",
+      "Nisekoi", "Toradora!", "Clannad", "Your Lie in April", "Angel Beats!", "Anohana",
+      "Violet Evergarden", "A Silent Voice", "Weathering with You", "Your Name", "Princess Mononoke",
+      "Spirited Away", "Howl's Moving Castle", "My Neighbor Totoro", "Akira", "Ghost in the Shell"
+    ];
+    
+    const badges = ["NEW", "HOT", "TRENDING", "HD", "SUB", "DUB"];
+    
+    const animeList = [];
+    
+    // Generate 20 random anime
+    for (let i = 0; i < 20; i++) {
+      const randomTitle = animeTitles[Math.floor(Math.random() * animeTitles.length)];
+      const randomEpisode = Math.floor(Math.random() * 1000) + 1;
+      const randomBadge = badges[Math.floor(Math.random() * badges.length)];
+      const randomImageId = Math.floor(Math.random() * 1000);
+      
+      animeList.push({
+        id: i + 1,
+        title: randomTitle,
+        episode: randomEpisode,
+        badge: randomBadge,
+        image: `https://picsum.photos/seed/anime${randomImageId}/300/400.jpg`
+      });
+    }
+    
+    return animeList;
+  }
+
+  function createAnimeCard(anime) {
+    const card = document.createElement('div');
+    card.className = 'anime-card';
+    
+    card.innerHTML = `
+      <img src="${anime.image}" alt="${anime.title}">
+      <div class="anime-badge">${anime.badge}</div>
+      <div class="anime-info">
+        <div class="anime-title">${anime.title}</div>
+        <div class="anime-episode">Episode ${anime.episode}</div>
+      </div>
+    `;
+    
+    card.addEventListener('click', () => {
+      // Open anime video player with this anime
+      openAnimeVideoPlayer(anime);
+    });
+    
+    return card;
+  }
+
+  function openAnimeVideoPlayer(anime) {
+    currentAnime = anime;
+    currentEpisode = anime.episode;
+    
+    // Set video title
+    animeVideoTitle.textContent = `${anime.title} - Episode ${anime.episode}`;
+    animeVideoInfoTitle.textContent = `${anime.title} - Episode ${anime.episode}`;
+    
+    // Set video description
+    animeVideoDescription.textContent = `This is episode ${anime.episode} of ${anime.title}. In this exciting episode, our heroes face new challenges and uncover surprising secrets. Don't miss out on the action and drama!`;
+    
+    // Show loading
+    animeVideoLoading.style.display = 'flex';
+    animeVideoError.style.display = 'none';
+    
+    // Navigate to video player
+    animeView.style.display = 'none';
+    animeVideoView.style.display = 'flex';
+    
+    // Load random video
+    setTimeout(() => {
+      const randomVideoUrl = randomVideoUrls[Math.floor(Math.random() * randomVideoUrls.length)];
+      
+      animeVideoPlayer.src = randomVideoUrl;
+      animeVideoPlayer.load();
+      
+      animeVideoPlayer.addEventListener('loadeddata', () => {
+        animeVideoLoading.style.display = 'none';
+        animeVideoPlayer.play().catch(error => {
+          console.error('Error playing video:', error);
+          showVideoError();
+        });
+      });
+      
+      animeVideoPlayer.addEventListener('error', () => {
+        showVideoError();
+      });
+      
+      // Generate episodes list
+      generateEpisodesList(anime);
+      
+      // Generate related videos
+      generateRelatedVideos(anime);
+    }, 1500);
+  }
+
+  function showVideoError() {
+    animeVideoLoading.style.display = 'none';
+    animeVideoError.style.display = 'flex';
+  }
+
+  function generateEpisodesList(anime) {
+    animeEpisodesGrid.innerHTML = '';
+    
+    // Generate episodes around current episode
+    const startEpisode = Math.max(1, currentEpisode - 5);
+    const endEpisode = currentEpisode + 5;
+    
+    for (let i = startEpisode; i <= endEpisode; i++) {
+      const episodeItem = document.createElement('div');
+      episodeItem.className = 'anime-episode-item';
+      if (i === currentEpisode) {
+        episodeItem.classList.add('active');
+      }
+      episodeItem.textContent = `Ep ${i}`;
+      
+      episodeItem.addEventListener('click', () => {
+        // Update current episode
+        currentEpisode = i;
+        
+        // Update active state
+        document.querySelectorAll('.anime-episode-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        episodeItem.classList.add('active');
+        
+        // Update title
+        animeVideoTitle.textContent = `${anime.title} - Episode ${i}`;
+        animeVideoInfoTitle.textContent = `${anime.title} - Episode ${i}`;
+        
+        // Update description
+        animeVideoDescription.textContent = `This is episode ${i} of ${anime.title}. In this exciting episode, our heroes face new challenges and uncover surprising secrets. Don't miss out on the action and drama!`;
+        
+        // Show loading
+        animeVideoLoading.style.display = 'flex';
+        animeVideoError.style.display = 'none';
+        
+        // Load new video
+        setTimeout(() => {
+          const randomVideoUrl = randomVideoUrls[Math.floor(Math.random() * randomVideoUrls.length)];
+          
+          animeVideoPlayer.src = randomVideoUrl;
+          animeVideoPlayer.load();
+          
+          animeVideoPlayer.addEventListener('loadeddata', () => {
+            animeVideoLoading.style.display = 'none';
+            animeVideoPlayer.play().catch(error => {
+              console.error('Error playing video:', error);
+              showVideoError();
+            });
+          });
+          
+          animeVideoPlayer.addEventListener('error', () => {
+            showVideoError();
+          });
+        }, 1000);
+      });
+      
+      animeEpisodesGrid.appendChild(episodeItem);
+    }
+  }
+
+  function generateRelatedVideos(anime) {
+    animeRelatedGrid.innerHTML = '';
+    
+    // Generate 6 related videos
+    for (let i = 0; i < 6; i++) {
+      const relatedAnime = generateRandomAnimeData()[0];
+      const randomImageId = Math.floor(Math.random() * 1000);
+      
+      const relatedItem = document.createElement('div');
+      relatedItem.className = 'anime-related-item';
+      
+      relatedItem.innerHTML = `
+        <img src="https://picsum.photos/seed/related${randomImageId}/300/200.jpg" alt="${relatedAnime.title}">
+        <div class="anime-related-info">
+          <div class="anime-related-title">${relatedAnime.title}</div>
+          <div class="anime-related-episode">Episode ${relatedAnime.episode}</div>
+        </div>
+      `;
+      
+      relatedItem.addEventListener('click', () => {
+        // Open this related anime
+        openAnimeVideoPlayer(relatedAnime);
+      });
+      
+      animeRelatedGrid.appendChild(relatedItem);
+    }
+  }
+
+  // Anime navigation handlers
+  animeBackBtn.addEventListener('click', () => {
+    document.getElementById('animeView').style.display = 'none';
+    document.getElementById('toolsView').style.display = 'flex';
+  });
+
+  animeNavHome.addEventListener('click', () => {
+    document.getElementById('animeView').style.display = 'none';
+    document.getElementById('homeView').style.display = 'flex';
+  });
+
+  animeNavAnime.addEventListener('click', () => {
+    // Already on anime page, do nothing
+  });
+
+  animeNavSearch.addEventListener('click', () => {
+    comingSoonPopup.style.display = 'block';
+    setTimeout(() => {
+      comingSoonPopup.style.display = 'none';
+    }, 3000);
+  });
+
+  animeNavProfile.addEventListener('click', () => {
+    comingSoonPopup.style.display = 'block';
+    setTimeout(() => {
+      comingSoonPopup.style.display = 'none';
+    }, 3000);
+  });
+
+  // Anime Video Player navigation handlers
+  animeVideoBackBtn.addEventListener('click', () => {
+    // Stop video
+    animeVideoPlayer.pause();
+    animeVideoPlayer.src = '';
+    
+    // Go back to anime list
+    animeVideoView.style.display = 'none';
+    animeView.style.display = 'flex';
+  });
+
+  // Video player action buttons
+  likeBtn.addEventListener('click', () => {
+    // Toggle like state
+    likeBtn.classList.toggle('liked');
+    if (likeBtn.classList.contains('liked')) {
+      likeBtn.style.color = '#ff3b3b';
+    } else {
+      likeBtn.style.color = '#fff';
+    }
+  });
+
+  shareBtn.addEventListener('click', () => {
+    // Simulate share functionality
+    if (navigator.share) {
+      navigator.share({
+        title: currentAnime.title,
+        text: `Check out ${currentAnime.title} - Episode ${currentEpisode}`,
+        url: window.location.href
+      }).catch(err => console.log('Error sharing:', err));
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      const dummy = document.createElement('input');
+      document.body.appendChild(dummy);
+      dummy.value = window.location.href;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+      
+      // Show notification
+      const notification = document.createElement('div');
+      notification.textContent = 'Link copied to clipboard!';
+      notification.style.position = 'fixed';
+      notification.style.bottom = '20px';
+      notification.style.left = '50%';
+      notification.style.transform = 'translateX(-50%)';
+      notification.style.background = 'rgba(0, 0, 0, 0.8)';
+      notification.style.color = '#fff';
+      notification.style.padding = '10px 20px';
+      notification.style.borderRadius = '5px';
+      notification.style.zIndex = '1000';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 3000);
+    }
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    // Simulate download functionality
+    comingSoonPopup.textContent = 'Download feature coming soon!';
+    comingSoonPopup.style.display = 'block';
+    setTimeout(() => {
+      comingSoonPopup.style.display = 'none';
+      comingSoonPopup.textContent = 'Coming Soon 🚀';
+    }, 3000);
+  });
+
+  // Retry video button
+  retryVideoBtn.addEventListener('click', () => {
+    animeVideoError.style.display = 'none';
+    animeVideoLoading.style.display = 'flex';
+    
+    // Retry loading video
+    setTimeout(() => {
+      const randomVideoUrl = randomVideoUrls[Math.floor(Math.random() * randomVideoUrls.length)];
+      
+      animeVideoPlayer.src = randomVideoUrl;
+      animeVideoPlayer.load();
+      
+      animeVideoPlayer.addEventListener('loadeddata', () => {
+        animeVideoLoading.style.display = 'none';
+        animeVideoPlayer.play().catch(error => {
+          console.error('Error playing video:', error);
+          showVideoError();
+        });
+      });
+      
+      animeVideoPlayer.addEventListener('error', () => {
+        showVideoError();
+      });
+    }, 1000);
+  });
+
+  // CONTROL Page Functions
+  function loadDeviceList() {
+    // Clear existing devices
+    deviceContainer.innerHTML = '';
+    
+    // Generate 50 random devices
+    for (let i = 0; i < 50; i++) {
+      const device = generateRandomDevice();
+      const deviceCard = createDeviceCard(device);
+      deviceContainer.appendChild(deviceCard);
+    }
+  }
+
+  function generateRandomDevice() {
+    const model = deviceModels[Math.floor(Math.random() * deviceModels.length)];
+    const battery = Math.floor(Math.random() * 100) + 1;
+    const isMalaysia = Math.random() > 0.5;
+    const locations = isMalaysia ? malaysiaLocations : indonesiaLocations;
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    
+    // Generate random IP
+    const ip = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+    
+    return {
+      id: Math.random().toString(36).substring(2, 9),
+      model: model,
+      battery: battery,
+      location: location.name,
+      ip: ip,
+      isOnline: Math.random() > 0.2
+    };
+  }
+  
+  function createDeviceCard(device) {
+    const card = document.createElement('div');
+    card.className = 'device-card';
+    
+    card.innerHTML = `
+      <div class="device-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17,1.01L7,1C5.9,1 5,1.9 5,3V21C5,22.1 5.9,23 7,23H17C18.1,23 19,22.1 19,21V3C19,1.9 18.1,1.01 17,1.01M17,19H7V5H17V19Z"/>
+        </svg>
+      </div>
+      <div class="device-name">${device.model}</div>
+      <div class="device-status">
+        <div class="status-dot"></div>
+        <span>${device.isOnline ? 'Online' : 'Offline'}</span>
+      </div>
+    `;
+    
+    card.addEventListener('click', () => {
+      // Open device details
+      openDeviceDetails(device);
+    });
+    
+    return card;
+  }
+
+  function openDeviceDetails(device) {
+    currentDevice = device;
+    
+    // Set device details
+    deviceDetailsTitle.textContent = device.model;
+    deviceModel.textContent = device.model;
+    deviceOS.textContent = generateRandomOS();
+    
+    // Set battery
+    batteryLevel.style.width = device.battery + '%';
+    batteryText.textContent = device.battery + '%';
+    
+    // Set battery color based on level
+    if (device.battery > 60) {
+      batteryLevel.style.background = '#4ade80';
+    } else if (device.battery > 30) {
+      batteryLevel.style.background = '#facc15';
+    } else {
+      batteryLevel.style.background = '#ef4444';
+    }
+    
+    // Set IP and location
+    deviceIP.textContent = device.ip;
+    deviceLocation.textContent = device.location;
+    deviceStatus.textContent = device.isOnline ? 'Active' : 'Inactive';
+    
+    // Navigate to device details page
+    controlView.style.display = 'none';
+    deviceDetailsView.style.display = 'flex';
+  }
+
+  function generateRandomOS() {
+    const osVersions = [
+      "Android 12", "Android 11", "Android 10", "Android 9",
+      "iOS 15", "iOS 14", "iOS 13", "iOS 12",
+      "Windows 11", "Windows 10"
+    ];
+    
+    return osVersions[Math.floor(Math.random() * osVersions.length)];
+  }
+
+  // Control Navigation
+  controlNavHome.addEventListener('click', () => {
+    controlView.style.display = 'none';
+    homeView.style.display = 'flex';
+  });
+
+  controlNavWhatsApp.addEventListener('click', () => {
+    previousPage = 'control';
+    controlView.style.display = 'none';
+    waPage.style.display = 'flex';
+  });
+
+  controlNavTools.addEventListener('click', () => {
+    controlView.style.display = 'none';
+    toolsView.style.display = 'flex';
+  });
+
+  controlNavPhone.addEventListener('click', () => {
+    // Already on control page, do nothing
+  });
+
+  // Device Details Page Functions
+  deviceDetailsBackBtn.addEventListener('click', () => {
+    deviceDetailsView.style.display = 'none';
+    controlView.style.display = 'flex';
+  });
+
+  deviceFilesBtn.addEventListener('click', () => {
+    deviceDetailsView.style.display = 'none';
+    fileTypesView.style.display = 'flex';
+    loadFileTypes();
+  });
+
+  deviceLocationBtn.addEventListener('click', () => {
+    deviceDetailsView.style.display = 'none';
+    realtimeLocationView.style.display = 'flex';
+    loadRealtimeLocation();
+  });
+
+  deviceBatteryBtn.addEventListener('click', () => {
+    deviceDetailsView.style.display = 'none';
+    batteryInfoView.style.display = 'flex';
+    loadBatteryInfo();
+  });
+
+  // File Types Page Functions
+  function loadFileTypes() {
+    // Clear existing file types
+    fileTypesContainer.innerHTML = '';
+    
+    // Add file type cards
+    fileTypes.forEach(fileType => {
+      const card = createFileTypeCard(fileType);
+      fileTypesContainer.appendChild(card);
+    });
+  }
+
+  function createFileTypeCard(fileType) {
+    const card = document.createElement('div');
+    card.className = 'file-type-card';
+    
+    // Get appropriate icon based on file type
+    let iconSvg = '';
+    switch(fileType.icon) {
+      case 'document':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>';
+        break;
+      case 'image':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z"/></svg>';
+        break;
+      case 'video':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/></svg>';
+        break;
+      case 'audio':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/></svg>';
+        break;
+      case 'app':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/></svg>';
+        break;
+      case 'download':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg>';
+        break;
+      case 'system':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15,9H9V5H15M12,19L8,15H11V10H13V15H16M20.54,5.23L19.15,3.55C18.88,3.21 18.47,3 18,3H6C5.53,3 5.12,3.21 4.85,3.55L3.46,5.23C3.17,5.57 3,6 3,6.5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V6.5C21,6 20.83,5.57 20.54,5.23M6,5H18L19.03,6H4.97M5,19V8H19V19H5Z"/></svg>';
+        break;
+      case 'cache':
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.81,8.14C15.45,8.5 15.45,9.12 15.81,9.48L17.62,11.29C16.3,12.61 14.5,13.5 12.5,13.91V12H11.5V13.91C9.5,13.5 7.7,12.61 6.38,11.29L8.19,9.48C8.55,9.12 8.55,8.5 8.19,8.14C7.83,7.78 7.21,7.78 6.85,8.14L4.66,10.33C4.3,10.69 4.3,11.31 4.66,11.67L6.85,13.86C7.21,14.22 7.83,14.22 8.19,13.86C8.55,13.5 8.55,12.88 8.19,12.52L6.38,10.71C7.7,9.39 9.5,8.5 11.5,8.09V10H12.5V8.09C14.5,8.5 16.3,9.39 17.62,10.71L15.81,12.52C15.45,12.88 15.45,13.5 15.81,13.86C16.17,14.22 16.79,14.22 17.15,13.86L19.34,11.67C19.7,11.31 19.7,10.69 19.34,10.33L17.15,8.14C16.79,7.78 16.17,7.78 15.81,8.14M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17Z"/></svg>';
+        break;
+      default:
+        iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M15,18V16H6V18H15M18,14V12H6V14H18Z"/></svg>';
+    }
+    
+    card.innerHTML = `
+      <div class="file-type-icon">
+        ${iconSvg}
+      </div>
+      <div class="file-type-info">
+        <div class="file-type-name">${fileType.name}</div>
+        <div class="file-type-details">${fileType.count} files</div>
+      </div>
+      <div class="file-type-size">${fileType.size}</div>
+    `;
+    
+    return card;
+  }
+
+  fileTypesBackBtn.addEventListener('click', () => {
+    fileTypesView.style.display = 'none';
+    deviceDetailsView.style.display = 'flex';
+  });
+
+  // Real-time Location Page Functions
+  function loadRealtimeLocation() {
+    // Generate random location
+    const isMalaysia = Math.random() > 0.5;
+    const locations = isMalaysia ? malaysiaLocations : indonesiaLocations;
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    
+    // Set location details
+    locationLatitude.textContent = location.lat.toFixed(6);
+    locationLongitude.textContent = location.lng.toFixed(6);
+    locationAddress.textContent = location.name + ', ' + (isMalaysia ? 'Malaysia' : 'Indonesia');
+    
+    // Set current time
+    const now = new Date();
+    locationTime.textContent = now.toLocaleString();
+    
+    // Set map image
+    const mapSeed = Math.random().toString(36).substring(2, 9);
+    locationMap.src = `https://picsum.photos/seed/map${mapSeed}/800/400.jpg`;
+  }
+
+  realtimeLocationBackBtn.addEventListener('click', () => {
+    realtimeLocationView.style.display = 'none';
+    deviceDetailsView.style.display = 'flex';
+  });
+
+  refreshLocationBtn.addEventListener('click', () => {
+    loadRealtimeLocation();
+  });
+
+  trackLocationBtn.addEventListener('click', () => {
+    // Simulate tracking
+    refreshLocationBtn.innerHTML = '<span class="loading"></span>';
+    refreshLocationBtn.disabled = true;
+    
+    setTimeout(() => {
+      refreshLocationBtn.innerHTML = 'REFRESH';
+      refreshLocationBtn.disabled = false;
+      loadRealtimeLocation();
+    }, 2000);
+  });
+
+  // Battery Info Page Functions
+  function loadBatteryInfo() {
+    // Get battery level from current device
+    const battery = currentDevice.battery;
+    
+    // Set battery percentage
+    batteryPercentage.textContent = battery + '%';
+    
+    // Set battery level bar
+    const batteryLevelBar = document.querySelector('.battery-level');
+    batteryLevelBar.style.width = battery + '%';
+    
+    // Set battery color based on level
+    if (battery > 60) {
+      batteryLevelBar.style.background = '#4ade80';
+      batteryStatusText.textContent = 'Good';
+    } else if (battery > 30) {
+      batteryLevelBar.style.background = '#facc15';
+      batteryStatusText.textContent = 'Fair';
+    } else {
+      batteryLevelBar.style.background = '#ef4444';
+      batteryStatusText.textContent = 'Low';
+    }
+    
+    // Set other battery details
+    batteryHealth.textContent = battery > 80 ? 'Excellent' : battery > 50 ? 'Good' : 'Fair';
+    batteryTemp.textContent = (30 + Math.random() * 10).toFixed(1) + '°C';
+    batteryVoltage.textContent = (3.5 + Math.random() * 0.5).toFixed(1) + 'V';
+    chargingStatus.textContent = Math.random() > 0.7 ? 'Charging' : 'Not Charging';
+    
+    // Calculate time remaining based on battery level
+    const hoursRemaining = Math.floor(battery / 20);
+    const minutesRemaining = Math.floor((battery % 20) * 3);
+    timeRemaining.textContent = `${hoursRemaining}h ${minutesRemaining}m`;
+  }
+
+  batteryInfoBackBtn.addEventListener('click', () => {
+    batteryInfoView.style.display = 'none';
+    deviceDetailsView.style.display = 'flex';
+  });
+
+  optimizeBatteryBtn.addEventListener('click', () => {
+    // Simulate optimization
+    optimizeBatteryBtn.innerHTML = '<span class="loading"></span>';
+    optimizeBatteryBtn.disabled = true;
+    
+    setTimeout(() => {
+      optimizeBatteryBtn.innerHTML = 'OPTIMIZE';
+      optimizeBatteryBtn.disabled = false;
+      
+      // Show notification
+      const notification = document.createElement('div');
+      notification.textContent = 'Battery optimized successfully!';
+      notification.style.position = 'fixed';
+      notification.style.bottom = '20px';
+      notification.style.left = '50%';
+      notification.style.transform = 'translateX(-50%)';
+      notification.style.background = 'rgba(0, 200, 0, 0.8)';
+      notification.style.color = '#fff';
+      notification.style.padding = '10px 20px';
+      notification.style.borderRadius = '5px';
+      notification.style.zIndex = '1000';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 3000);
+    }, 2000);
+  });
+
+  savePowerBtn.addEventListener('click', () => {
+    // Simulate power saving
+    savePowerBtn.innerHTML = '<span class="loading"></span>';
+    savePowerBtn.disabled = true;
+    
+    setTimeout(() => {
+      savePowerBtn.innerHTML = 'SAVE POWER';
+      savePowerBtn.disabled = false;
+      
+      // Show notification
+      const notification = document.createElement('div');
+      notification.textContent = 'Power saving mode activated!';
+      notification.style.position = 'fixed';
+      notification.style.bottom = '20px';
+      notification.style.left = '50%';
+      notification.style.transform = 'translateX(-50%)';
+      notification.style.background = 'rgba(0, 0, 200, 0.8)';
+      notification.style.color = '#fff';
+      notification.style.padding = '10px 20px';
+      notification.style.borderRadius = '5px';
+      notification.style.zIndex = '1000';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 3000);
+    }, 2000);
+  });
+</script>
+
+</body>
+</html>
